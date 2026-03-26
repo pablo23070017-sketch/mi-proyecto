@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Menú - Tío Garnacha</title>
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0f0f0f;
+}
+
+.titulo {
+    text-align: center;
+    background: linear-gradient(90deg, #ea580c, #fb923c);
+    color: #ffffff;
+    padding: 15px;
+}
+
+.contenedor {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+.seccion {
+    width: 45%;
+}
+
+.seccion h2 {
+    text-align: center;
+    background: #c2410c;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.item {
+    background: #1f1f1f;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    text-align: center;
+    border: 2px solid #ea580c;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.item:hover {
+    transform: scale(1.06);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+}
+
+.seleccionado {
+    border: 2px solid #22c55e;
+    background: #14532d;
+}
+
+.item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.item h3 {
+    color: #ffffff;
+    font-size: 18px;
+}
+
+.item p {
+    color: #facc15;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+button {
+    margin: 5px;
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:first-of-type {
+    background: #16a34a;
+    color: white;
+}
+
+button:last-of-type {
+    background: #dc2626;
+    color: white;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #1f1f1f;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+}
+
+.ingrediente {
+    color: #ffffff;
+    margin: 5px 0;
+    font-size: 15px;
+}
+
+.tachado {
+    text-decoration: line-through;
+    color: #9ca3af;
+}
+
+.modal-titulo {
+    color: white;
+}
+
+#cantidadModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#cantidadModal .modal-content {
+    width: 250px;
+    text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+    <input type="number" id="mesaInput" placeholder="Mesa #" min="1">
+    <button onclick="confirmarPedidoGeneral()">Confirmar Pedido</button>
+</div>
+
+<h1 class="titulo">Tío Garnacha - Menú</h1>
+
+<div class="contenedor">
+
+    <div class="seccion">
+        <h2>Comida</h2>
+
+        <div class="item">
+            <img src="imagenes/tacos.jpg">
+            <h3>Tacos</h3>
+            <p>$20</p>
+            <button onclick="verIngredientes('Tortilla, carne, cebolla, cilantro, salsa','Tacos', this.parentElement)">Personalizar</button>
+            <button onclick="cancelar(this.parentElement)">Cancelar</button>
+        </div>
+
+        <div class="item">
+            <img src="imagenes/hamburguesa.jpg">
+            <h3>Hamburguesa</h3>
+            <p>$50</p>
+            <button onclick="verIngredientes('Pan, carne, lechuga, tomate, queso, mayonesa','Hamburguesa', this.parentElement)">Personalizar</button>
+            <button onclick="cancelar(this.parentElement)">Cancelar</button>
+        </div>
+
+        <div class="item">
+            <img src="imagenes/quesadilla.jpg">
+            <h3>Quesadillas</h3>
+            <p>$25</p>
+            <button onclick="verIngredientes('Tortilla, queso, carne, crema','Quesadillas', this.parentElement)">Personalizar</button>
+            <button onclick="cancelar(this.parentElement)">Cancelar</button>
+        </div>
+
+        <div class="item">
+            <img src="imagenes/chalupa.jpg">
+            <h3>Chalupa</h3>
+            <p>$28</p>
+            <button onclick="verIngredientes('Tortilla, carne, cebolla, salsa','Chalupa', this.parentElement)">Personalizar</button>
+            <button onclick="cancelar(this.parentElement)">Cancelar</button>
+        </div>
+
+        <div class="item">
+            <img src="imagenes/hotdog.jpg">
+            <h3>Hot Dog</h3>
+            <p>$30</p>
+            <button onclick="verIngredientes('Pan, salchicha, catsup, mostaza, cebolla','Hot Dog', this.parentElement)">Personalizar</button>
+            <button onclick="cancelar(this.parentElement)">Cancelar</button>
+        </div>
+
+        <div class="item">
+            <img src="imagenes/salbute.jpg">
+            <h3>Salbute</h3>
+            <p>$35</p>
+            <button onclick="verIngredientes('Masa, pollo, lechuga, tomate, aguacate','Salbute', this.parentElement)">Personalizar</button>
+            <button onclick="cancelar(this.parentElement)">Cancelar</button>
+        </div>
+
+        <div class="item">
+            <img src="imagenes/panucho.jpg">
+            <h3>Panucho</h3>
+            <p>$35</p>
+            <button onclick="verIngredientes('Tortilla, frijol, pollo, lechuga, tomate','Panucho', this.parentElement)">Personalizar</button>
+            <button onclick="cancelar(this.parentElement)">Cancelar</button>
+        </div>
+
+    </div>
+
+    <div class="seccion">
+        <h2>Bebidas</h2>
+
+        <div class="item">
+            <img src="imagenes/coca.jpg">
+            <h3>Coca-Cola</h3>
+            <p>$18</p>
+            <button onclick="solicitarCantidad('Coca-Cola', this.parentElement)">Agregar</button>
+            <button onclick="cancelar(this.parentElement)">Cancelar</button>
+        </div>
+
+        <div class="item">
+            <img src="imagenes/jamaica.jpg">
+            <h3>Agua de Jamaica</h3>
+            <p>$15</p>
+            <button onclick="solicitarCantidad('Agua de Jamaica', this.parentElement)">Agregar</button>
+            <button onclick="cancelar(this.parentElement)">Cancelar</button>
+        </div>
+
+        <div class="item">
+            <img src="imagenes/tamarindo.jpg">
+            <h3>Agua de Tamarindo</h3>
+            <p>$15</p>
+            <button onclick="solicitarCantidad('Agua de Tamarindo', this.parentElement)">Agregar</button>
+            <button onclick="cancelar(this.parentElement)">Cancelar</button>
+        </div>
+
+        <div class="item">
+            <img src="imagenes/cafe.jpg">
+            <h3>Café</h3>
+            <p>$12</p>
+            <button onclick="solicitarCantidad('Café', this.parentElement)">Agregar</button>
+            <button onclick="cancelar(this.parentElement)">Cancelar</button>
+        </div>
+
+        <div class="item">
+            <img src="imagenes/horchata.jpg">
+            <h3>Agua de Horchata</h3>
+            <p>$15</p>
+            <button onclick="solicitarCantidad('Agua de Horchata', this.parentElement)">Agregar</button>
+            <button onclick="cancelar(this.parentElement)">Cancelar</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- MODAL PERSONALIZAR -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h2 class="modal-titulo">Personalizar</h2>
+        <div id="listaIngredientes"></div>
+        <button onclick="abrirCantidadPersonalizado()">Agregar</button>
+        <button onclick="cerrarModal()">Regresar</button>
+    </div>
+</div>
+
+<!-- MODAL CANTIDAD -->
+<div id="cantidadModal" class="modal">
+    <div class="modal-content">
+        <h3 id="cantidadProducto"></h3>
+        <input type="number" id="cantidadInput" value="1" min="1" style="padding:5px; width:60px; margin:10px;">
+        <br>
+        <button onclick="confirmarCantidad()">OK</button>
+        <button onclick="cerrarCantidad()">Cancelar</button>
+    </div>
+</div>
+
+<script>
+let pedidos = [];
+let itemActual = null;
+let productoActual = "";
+let elementoActual = null;
+let ingredientesSeleccionados = [];
+
+/* PERSONALIZAR */
+function verIngredientes(info, producto, elemento) {
+    itemActual = elemento;
+    productoActual = producto;
+    ingredientesSeleccionados = [];
+
+    const lista = document.getElementById("listaIngredientes");
+    lista.innerHTML = "";
+
+    info.split(",").forEach(ing => {
+        const div = document.createElement("div");
+        div.className = "ingrediente";
+
+        const check = document.createElement("input");
+        check.type = "checkbox";
+        check.checked = true;
+
+        const span = document.createElement("span");
+        span.innerText = " " + ing;
+
+        check.addEventListener("change", () => {
+            span.classList.toggle("tachado", !check.checked);
+        });
+
+        div.appendChild(check);
+        div.appendChild(span);
+        lista.appendChild(div);
+    });
+
+    document.getElementById("modal").style.display = "flex";
+}
+
+/* ABRIR MODAL DE CANTIDAD DESDE PERSONALIZADO */
+function abrirCantidadPersonalizado() {
+    ingredientesSeleccionados = [];
+    document.querySelectorAll("#listaIngredientes input").forEach(chk => {
+        if (chk.checked) ingredientesSeleccionados.push(chk.nextElementSibling.innerText.trim());
+    });
+
+    elementoActual = itemActual;
+    document.getElementById("cantidadProducto").innerText = productoActual;
+    document.getElementById("cantidadInput").value = 1;
+    document.getElementById("cantidadModal").style.display = "flex";
+    cerrarModal();
+}
+
+/* AGREGAR BEBIDAS */
+function solicitarCantidad(producto, elemento) {
+    elementoActual = elemento;
+    productoActual = producto;
+    ingredientesSeleccionados = ["Normal"];
+    document.getElementById("cantidadProducto").innerText = productoActual;
+    document.getElementById("cantidadInput").value = 1;
+    document.getElementById("cantidadModal").style.display = "flex";
+}
+
+/* CONFIRMAR CANTIDAD */
+function confirmarCantidad() {
+    let cantidad = parseInt(document.getElementById("cantidadInput").value);
+    if (!cantidad || cantidad <= 0) return;
+
+    pedidos.push({
+        producto: productoActual,
+        ingredientes: [...ingredientesSeleccionados],
+        cantidad
+    });
+
+    if(elementoActual) elementoActual.classList.add("seleccionado");
+    cerrarCantidad();
+}
+
+/* CERRAR MODAL */
+function cerrarModal() {
+    document.getElementById("modal").style.display = "none";
+}
+
+function cerrarCantidad() {
+    document.getElementById("cantidadModal").style.display = "none";
+}
+
+/* CANCELAR */
+function cancelar(elemento) {
+    elemento.classList.remove("seleccionado");
+}
+
+/* CONFIRMAR TODO */
+function confirmarPedidoGeneral() {
+    let mesa = document.getElementById("mesaInput").value;
+
+    if (!mesa) {
+        alert("Ingresa mesa");
+        return;
+    }
+
+    if (pedidos.length === 0) {
+        alert("No hay pedidos");
+        return;
+    }
+
+    localStorage.setItem("mesa", mesa);
+    localStorage.setItem("pedidos", JSON.stringify(pedidos));
+
+    window.location.href = "confirmacion.html";
+}
+</script>
+</body>
+</html>

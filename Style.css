@@ -1,0 +1,77 @@
+body {
+    margin: 0;
+    font-family: Arial;
+
+    background-image: url("imagenes/FondoGGG.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container {
+    background: linear-gradient(145deg, #ea580c, #c2410c);
+    padding: 45px;
+    border-radius: 18px;
+    width: 340px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    border: 3px solid #9a3412;
+}
+
+h1 {
+    font-family: 'Georgia', serif;
+    color: #fff7ed;
+    font-size: 28px;
+}
+
+h2 {
+    color: #ffedd5;
+    margin-bottom: 25px;
+}
+
+input {
+    display: block;
+    margin: 12px auto;
+    width: 85%;
+    padding: 11px;
+    border-radius: 10px;
+    border: 2px solid #9a3412;
+    background: #fff7ed;
+    text-align: center;
+}
+
+input:focus {
+    background: #ffedd5;
+    border-color: #fb923c;
+}
+
+#loginBtn {
+    width: 90%;
+    padding: 13px;
+    margin-top: 10px;
+    background: #16a34a;
+    color: white;
+    border: 2px solid #14532d;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+#crearBtn {
+    width: 90%;
+    padding: 13px;
+    margin-top: 10px;
+    background: #facc15;
+    color: black;
+    border: 2px solid #ca8a04;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}

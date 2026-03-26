@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Gestionar Menú - Tío Garnacha</title>
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #e8f6f3;
+        padding: 20px;
+    }
+    h1.titulo {
+        color: #059669;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    h2.seccion-titulo {
+        color: #000;
+        margin-bottom: 15px;
+        font-size: 1.5rem;
+        text-align: center;
+    }
+    .boton-regresar {
+        display: block;
+        margin: 0 auto 30px auto;
+        padding: 10px 20px;
+        background-color: #ea580c; 
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+        font-size: 1rem;
+    }
+    .boton-regresar:hover {
+        background-color: #c2410c;
+    }
+    .contenedor-principal {
+        display: flex;
+        justify-content: center;
+        gap: 50px;
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+    .contenedor {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+        min-width: 250px;
+    }
+    .item {
+        background-color: #d1fae5;
+        border: 2px solid #059669;
+        border-radius: 15px;
+        padding: 15px;
+        text-align: center;
+        color: #000;
+        width: 220px;
+    }
+    .item img {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+    .item h3 {
+        color: #000;
+        margin-bottom: 5px;
+    }
+    .item button {
+        margin: 5px;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        background-color: #059669;
+        color: white;
+        font-weight: bold;
+        transition: 0.2s;
+    }
+    .item button.bloqueado {
+        background-color: gray;
+    }
+    .item button:hover {
+        transform: translateY(-2px);
+    }
+</style>
+</head>
+<body>
+
+<h1 class="titulo">Gestionar Menú - Tío Garnacha</h1>
+
+<button class="boton-regresar" onclick="window.location.href='admin.html'">
+    ← Regresar al Panel
+</button>
+
+<div class="contenedor-principal">
+
+    <!-- COMIDAS -->
+    <div class="contenedor">
+        <h2 class="seccion-titulo">Comidas</h2>
+        <div class="item">
+            <img src="imagenes/tacos.jpg" alt="Tacos">
+            <h3>Tacos</h3>
+            <p>$20</p>
+            <button onclick="toggleDisponibilidad(this)">Bloquear</button>
+        </div>
+        <div class="item">
+            <img src="imagenes/hamburguesa.jpg" alt="Hamburguesa">
+            <h3>Hamburguesa</h3>
+            <p>$50</p>
+            <button onclick="toggleDisponibilidad(this)">Bloquear</button>
+        </div>
+        <div class="item">
+            <img src="imagenes/quesadilla.jpg" alt="Quesadillas">
+            <h3>Quesadillas</h3>
+            <p>$25</p>
+            <button onclick="toggleDisponibilidad(this)">Bloquear</button>
+        </div>
+        <div class="item">
+            <img src="imagenes/hotdog.jpg" alt="Hot Dog">
+            <h3>Hot Dog</h3>
+            <p>$30</p>
+            <button onclick="toggleDisponibilidad(this)">Bloquear</button>
+        </div>
+        <div class="item">
+            <img src="imagenes/panucho.jpg" alt="Panuchos">
+            <h3>Panuchos</h3>
+            <p>$35</p>
+            <button onclick="toggleDisponibilidad(this)">Bloquear</button>
+        </div>
+        <div class="item">
+            <img src="imagenes/salbute.jpg" alt="Salbutes">
+            <h3>Salbutes</h3>
+            <p>$35</p>
+            <button onclick="toggleDisponibilidad(this)">Bloquear</button>
+        </div>
+        <div class="item">
+            <img src="imagenes/Chalupa.jpg" alt="Chalupas">
+            <h3>Chalupas</h3>
+            <p>$28</p>
+            <button onclick="toggleDisponibilidad(this)">Bloquear</button>
+        </div>
+    </div>
+
+    <!-- BEBIDAS -->
+    <div class="contenedor">
+        <h2 class="seccion-titulo">Bebidas</h2>
+        <div class="item">
+            <img src="imagenes/coca.jpg" alt="Coca-Cola">
+            <h3>Coca-Cola</h3>
+            <p>$18</p>
+            <button onclick="toggleDisponibilidad(this)">Bloquear</button>
+        </div>
+        <div class="item">
+            <img src="imagenes/jamaica.jpg" alt="Agua de Jamaica">
+            <h3>Agua de Jamaica</h3>
+            <p>$15</p>
+            <button onclick="toggleDisponibilidad(this)">Bloquear</button>
+        </div>
+        <div class="item">
+            <img src="imagenes/horchata.jpg" alt="Agua de Horchata">
+            <h3>Agua de Horchata</h3>
+            <p>$15</p>
+            <button onclick="toggleDisponibilidad(this)">Bloquear</button>
+        </div>
+        <div class="item">
+            <img src="imagenes/cafe.jpg" alt="Café">
+            <h3>Café</h3>
+            <p>$12</p>
+            <button onclick="toggleDisponibilidad(this)">Bloquear</button>
+        </div>
+        <div class="item">
+            <img src="imagenes/tamarindo.jpg" alt="Agua de Tamarindo">
+            <h3>Agua de Tamarindo</h3>
+            <p>$15</p>
+            <button onclick="toggleDisponibilidad(this)">Bloquear</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function toggleDisponibilidad(button) {
+    if(button.classList.contains('bloqueado')) {
+        button.classList.remove('bloqueado');
+        button.textContent = 'Bloquear';
+        button.parentElement.style.opacity = '1';
+    } else {
+        button.classList.add('bloqueado');
+        button.textContent = 'Desbloquear';
+        button.parentElement.style.opacity = '0.5';
+    }
+}
+</script>
+
+</body>
+</html>

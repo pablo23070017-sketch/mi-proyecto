@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Confirmación</title>
+<style>
+body{font-family:Arial;background:linear-gradient(135deg,#ea580c,#fb923c);display:flex;justify-content:center;align-items:center;height:100vh}.card{background:#1f1f1f;color:white;padding:40px;border-radius:15px;text-align:center;width:300px}.estado{font-size:18px;margin:15px 0}button{margin:10px;padding:10px;border-radius:8px;border:none;cursor:pointer;font-weight:bold}button:first-of-type{background:#22c55e;color:white}button:last-of-type{background:#3b82f6;color:white}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>Pedido Confirmado</h1>
+<h2 id="mesa"></h2>
+<p class="estado">Estado: En preparación 🟡</p>
+<button onclick="cambiarEstado()">Marcar como listo</button>
+<button onclick="irTicket()">Generar Ticket</button>
+</div>
+<script>
+let mesa=localStorage.getItem("mesa");document.getElementById("mesa").innerText="Mesa: "+mesa;
+function cambiarEstado(){document.querySelector(".estado").innerText="Estado: Listo ✔";document.querySelector(".estado").style.color="#22c55e"}
+function irTicket(){window.location.href="ticket.html"}
+</script>
+</body>
+</html>
