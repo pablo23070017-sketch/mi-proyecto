@@ -1,0 +1,58 @@
+/* 1. EL FONDO DE TODA LA PÁGINA */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #FACC15 !important; /* AMARILLO OFICIAL [cite: 216] */
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 2. EL RECUADRO NARANJA (CONTENEDOR) */
+.login-container {
+    background-color: #EA580C !important; /* NARANJA [cite: 10, 118] */
+    padding: 40px;
+    border-radius: 15px;
+    width: 320px;
+    text-align: center;
+    border: 3px solid #000000; /* Borde negro para que resalte */
+    box-shadow: 10px 10px 0px #000000; /* Sombra sólida estilo retro */
+}
+
+/* 3. TODAS LAS LETRAS EN NEGRO */
+h1, h2, label, p, input {
+    color: #000000 !important; /* NEGRO ABSOLUTO [cite: 197] */
+}
+
+/* 4. LOS INPUTS (DONDE ESCRIBES) */
+input {
+    display: block;
+    margin: 15px auto;
+    width: 90%;
+    padding: 10px;
+    background-color: #FFFFFF; /* Blanco para que se vea lo que escribes */
+    border: 2px solid #000000; 
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+/* 5. LOS BOTONES VERDES */
+#loginBtn, #crearBtn, .boton-verde {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background-color: #16A34A !important; /* VERDE ÉXITO [cite: 19, 214] */
+    color: #000000 !important; /* Letras negras en los botones */
+    border: 2px solid #000000;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+/* Efecto al pasar el mouse */
+button:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}

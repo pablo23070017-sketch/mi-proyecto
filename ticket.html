@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Ticket del Pedido</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #ff8c42;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.ticket {
+    background: #f5f5f5;
+    padding: 30px;
+    border: 3px dashed #000;
+    width: 400px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+
+.ticket h2 {
+    text-align: center;
+    color: #ff6600;
+}
+
+.ticket pre {
+    font-family: monospace;
+    font-size: 14px;
+}
+
+.total {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.estado {
+    color: green;
+    font-weight: bold;
+}
+
+/* Botón cerrar sesión */
+.btn-cerrar {
+    margin-top: 15px;
+    width: 100%;
+    padding: 10px;
+    background: #ff6600;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-cerrar:hover {
+    background: #e65c00;
+}
+</style>
+</head>
+<body>
+<div class="ticket">
+    <h2>Ticket del Pedido</h2>
+    <pre id="contenidoTicket"></pre>
+
+    <!-- Botón agregado -->
+    <button class="btn-cerrar" onclick="cerrarSesion()">Cerrar sesión</button>
+</div>
+
+<script>
+function generarTicket() {
+    // Traer datos desde localStorage
+    const mesa = localStorage.getItem("mesa") || "N/A";
+    const pedidos = JSON.parse(localStorage.getItem("pedidos") || "[]");
+    const fecha = new Date().toLocaleDateString();
+
+    let total = 0;
+    let lineasPedidos = "";
+
+    pedidos.forEach(p => {
+        let ingredientes = p.ingredientes.join(", ");
+        lineasPedidos += `${p.producto} x${p.cantidad} (${ingredientes})\n`;
+        let precioUnitario = 0;
+        switch(p.producto.toLowerCase()) {
+            case "tacos": precioUnitario = 20; break;
+            case "hamburguesa": precioUnitario = 50; break;
+            case "refresco": precioUnitario = 18; break;
+            case "horchata": precioUnitario = 20; break;
+            default: precioUnitario = 30; break;
+        }
+        total += precioUnitario * p.cantidad;
+    });
+
+    const ticketTexto = 
+`TÍO GRANACHA
+Ticket de Venta
+-------------------------------
+Mesa: ${mesa}
+Fecha: ${fecha}
+-------------------------------
+${lineasPedidos}-------------------------------
+TOTAL: $${total}
+Tipo de pago: Efectivo
+Estado: Pedido Realizado ✔
+-------------------------------
+Gracias por su compra`;
+
+    document.getElementById("contenidoTicket").innerText = ticketTexto;
+}
+
+// Función cerrar sesión (agregada)
+function cerrarSesion() {
+    localStorage.clear(); // borra datos
+    window.location.href = "index.html"; // regresa al login
+}
+
+// Generar ticket al cargar
+window.onload = generarTicket;
+</script>
+</body>
+</html>

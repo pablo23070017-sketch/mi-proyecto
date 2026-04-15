@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Principal - Tío Garnacha</title>
+    <style>
+        body { background-color: #facc15; font-family: Arial, sans-serif; margin: 0; color: #000; display: flex; flex-direction: column; align-items: center; }
+        
+        .header { background-color: #ea580c; width: 100%; padding: 20px 0; border-bottom: 4px solid #000; text-align: center; }
+        
+        .contenedor-botones { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 500px; width: 90%; }
+
+        /* Botones grandes para uso táctil en celular */
+        .tarjeta-opcion {
+            background-color: #ea580c; /* Naranja */
+            border: 3px solid #000;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+            box-shadow: 6px 6px 0px #000;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tarjeta-opcion:active { transform: scale(0.95); }
+
+        .icono { font-size: 40px; margin-bottom: 10px; }
+
+        .btn-salir {
+            margin-top: 30px;
+            background-color: #16a34a; /* Verde solicitado */
+            border: 2px solid #000;
+            padding: 10px 40px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1 style="margin:0;">TÍO GARNACHA</h1>
+    <small>Sistema de Control de Ventas</small>
+</div>
+
+<h2 style="margin-top:30px; text-transform: uppercase;">¿Qué deseas realizar?</h2>
+
+<div class="contenedor-botones">
+    <a href="Mesero.html" class="tarjeta-opcion">
+        <div class="icono">📝</div>
+        <span>TOMAR PEDIDO</span>
+    </a>
+
+    <a href="cocina.html" class="tarjeta-opcion">
+        <div class="icono">👨‍🍳</div>
+        <span>VER PEDIDOS</span>
+    </a>
+</div>
+
+<button class="btn-salir" onclick="window.location.href='index.html'">CERRAR SESIÓN</button>
+
+<p style="margin-top: 40px; font-size: 12px;">v1.0 - VersionPrueba</p>
+
+</body>
+</html>

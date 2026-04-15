@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pedidos Realizados - Administrador</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #fff7ed;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            width: 100%;
+            background-color: #ea580c;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ea580c;
+            margin: 30px 0;
+        }
+
+        .table-container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 0 auto 50px auto;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff1e0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #ea580c;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #ffe6cc;
+        }
+
+        tr:hover {
+            background-color: #ffdd99;
+        }
+
+        .back-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 12px 25px;
+            background-color: #ea580c;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background-color: #c2410c;
+        }
+
+        @media(max-width: 600px) {
+            th, td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        Sistema Tío Granacha
+        <span>Administrador</span>
+    </header>
+
+    <h1>Pedidos Realizados</h1>
+
+    <div class="table-container">
+        <table id="pedidosTable">
+            <thead>
+                <tr>
+                    <th>ID Pedido</th>
+                    <th>Mesero</th>
+                    <th>Productos</th>
+                    <th>Total</th>
+                    <th>Fecha / Hora</th>
+                    <th>Tipo de Pago</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Los pedidos se llenarán aquí -->
+            </tbody>
+        </table>
+    </div>
+
+    <button class="back-btn" onclick="window.location.href='admin.html'">Volver al Panel</button>
+
+    <script>
+        // Suponemos que los pedidos se guardan en localStorage como 'pedidos'
+        let pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
+
+        const tbody = document.querySelector("#pedidosTable tbody");
+
+        if(pedidos.length === 0) {
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
+            cell.colSpan = 6;
+            cell.textContent = "No hay pedidos realizados.";
+            cell.style.textAlign = "center";
+            row.appendChild(cell);
+            tbody.appendChild(row);
+        } else {
+            pedidos.forEach((pedido, index) => {
+                const row = document.createElement("tr");
+
+                const idCell = document.createElement("td");
+                idCell.textContent = pedido.id || index + 1;
+
+                const meseroCell = document.createElement("td");
+                meseroCell.textContent = pedido.mesero;
+
+                const productosCell = document.createElement("td");
+                productosCell.textContent = pedido.productos.join(", ");
+
+                const totalCell = document.createElement("td");
+                totalCell.textContent = `$${pedido.total.toFixed(2)}`;
+
+                const fechaCell = document.createElement("td");
+                fechaCell.textContent = pedido.fecha;
+
+                const pagoCell = document.createElement("td");
+                pagoCell.textContent = pedido.tipoPago;
+
+                row.appendChild(idCell);
+                row.appendChild(meseroCell);
+                row.appendChild(productosCell);
+                row.appendChild(totalCell);
+                row.appendChild(fechaCell);
+                row.appendChild(pagoCell);
+
+                tbody.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>
