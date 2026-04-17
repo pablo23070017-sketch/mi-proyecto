@@ -22,7 +22,7 @@ body {
 
 /* 3. TODAS LAS LETRAS EN NEGRO */
 h1, h2, label, p, input {
-    color: #000000 !important; /* NEGRO ABSOLUTO [cite: 197] */
+    color: #000000 !important; /* NEGRO ABSOLUTO */
 }
 
 /* 4. LOS INPUTS (DONDE ESCRIBES) */

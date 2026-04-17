@@ -5,15 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Principal - Tío Garnacha</title>
     <style>
-        body { background-color: #facc15; font-family: Arial, sans-serif; margin: 0; color: #000; display: flex; flex-direction: column; align-items: center; }
+        body { 
+            background-color: #facc15; 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            color: #000; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
         
-        .header { background-color: #ea580c; width: 100%; padding: 20px 0; border-bottom: 4px solid #000; text-align: center; }
-        
-        .contenedor-botones { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 500px; width: 90%; }
+        /* HEADER MODIFICADO: Ahora es un contenedor flex para alinear todo */
+        .header { 
+            background-color: #ea580c; 
+            width: 100%; 
+            padding: 10px 0; 
+            border-bottom: 4px solid #000; 
+            display: flex;
+            justify-content: space-between; /* Separa logo, título y botón */
+            align-items: center;
+        }
 
-        /* Botones grandes para uso táctil en celular */
+        /* Estilo para el logo en la esquina izquierda */
+        .logo-header {
+            width: 180px;
+            height: 80px;
+            background-color: #fff;
+        }
+        
+        .contenedor-botones { 
+            padding: 20px; 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+            max-width: 500px; 
+            width: 90%; 
+            margin-top: 20px;
+        }
+
         .tarjeta-opcion {
-            background-color: #ea580c; /* Naranja */
+            background-color: #ea580c; 
             border: 3px solid #000;
             border-radius: 15px;
             padding: 20px;
@@ -33,25 +64,33 @@
 
         .icono { font-size: 40px; margin-bottom: 10px; }
 
+        /* BOTÓN MOVIDO A LA DERECHA DEL HEADER */
         .btn-salir {
-            margin-top: 30px;
-            background-color: #16a34a; /* Verde solicitado */
+            background-color: #16a34a; 
             border: 2px solid #000;
-            padding: 10px 40px;
+            padding: 8px 15px;
             border-radius: 10px;
             font-weight: bold;
             cursor: pointer;
+            margin-right: 20px; /* Margen a la derecha */
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1 style="margin:0;">TÍO GARNACHA</h1>
-    <small>Sistema de Control de Ventas</small>
+    <img src="imagenes/Log2.png" alt="Logo" class="logo-header">
+
+    <div style="text-align: center;">
+        <h1 style="margin:0; font-size: 1.5rem;">TÍO GARNACHA</h1>
+        <small>Control de Ventas</small>
+    </div>
+
+    <button class="btn-salir" onclick="window.location.href='index.html'">CERRAR SESIÓN</button>
 </div>
 
-<h2 style="margin-top:30px; text-transform: uppercase;">¿Qué deseas realizar?</h2>
+<h2 style="margin-top:30px; text-transform: uppercase; text-align: center;">¿Qué deseas realizar?</h2>
 
 <div class="contenedor-botones">
     <a href="Mesero.html" class="tarjeta-opcion">
@@ -59,15 +98,13 @@
         <span>TOMAR PEDIDO</span>
     </a>
 
-    <a href="cocina.html" class="tarjeta-opcion">
-        <div class="icono">👨‍🍳</div>
+    <a href="pedidos.html" class="tarjeta-opcion">
+        <div class="icono">📋</div>
         <span>VER PEDIDOS</span>
     </a>
 </div>
 
-<button class="btn-salir" onclick="window.location.href='index.html'">CERRAR SESIÓN</button>
-
-<p style="margin-top: 40px; font-size: 12px;">v1.0 - VersionPrueba</p>
+<p style="margin-top: 60px; font-size: 12px; text-align: center;">v1.2 - Primera version</p>
 
 </body>
 </html>

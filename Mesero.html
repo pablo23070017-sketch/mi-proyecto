@@ -3,143 +3,284 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tío Garnacha - Pedido Móvil</title>
+    <title>Tío Garnacha - Pedidos</title>
     <style>
-        body { background-color: #facc15; font-family: Arial, sans-serif; margin: 0; color: #000; }
-        .barra-superior { background-color: #ea580c; padding: 10px; text-align: center; border-bottom: 3px solid #000; position: sticky; top: 0; z-index: 100; }
-        .seccion-titulo { text-align: center; background-color: #000; color: #facc15; padding: 5px; margin: 15px 0 5px 0; text-transform: uppercase; }
-        .caja-naranja { background-color: #ea580c; border: 2px solid #000; border-radius: 12px; margin: 10px; padding: 12px; box-shadow: 4px 4px 0px #000; }
-        .boton-v { background-color: #16a34a; color: #000; border: 2px solid #000; border-radius: 8px; padding: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 5px; font-size: 1rem; }
+        :root {
+            --amarillo: #facc15;
+            --naranja: #ea580c; 
+            --negro: #000000;   
+            --verde: #16a34a;   
+            --blanco: #ffffff;
+        }
+
+        body { 
+            background-color: var(--amarillo); 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            color: var(--negro);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .barra-superior { 
+            background-color: var(--naranja); 
+            padding: 10px 20px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--negro);
+        }
+
+        .info-mesa {
+            display: flex;
+            gap: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            align-items: center;
+        }
+
+        .boton-salir {
+            background-color: var(--verde);
+            color: var(--negro);
+            border: 2px solid var(--negro);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .panel-principal {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .seccion-panel {
+            background: var(--naranja);
+            border: 3px solid var(--negro);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 6px 6px 0px var(--negro);
+            height: fit-content;
+        }
+
+        .titulo-panel {
+            background-color: var(--negro);
+            color: var(--amarillo);
+            padding: 10px;
+            margin: 0;
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 1rem;
+        }
+
+        .cuerpo-panel {
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .boton-accion, .boton-persona, .btn-confirmar {
+            background-color: var(--verde) !important;
+            color: var(--negro) !important;
+            border: 2px solid var(--negro);
+            border-radius: 8px;
+            padding: 12px 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .footer-acciones {
+            background: var(--negro);
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-confirmar {
+            width: 90%;
+            max-width: 400px;
+            padding: 15px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            border: 3px solid var(--amarillo);
+        }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 200; }
         
-        /* Modales */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 200; }
-        .modal-contenido { background-color: #facc15; border: 4px solid #ea580c; padding: 20px; width: 85%; border-radius: 15px; max-height: 90vh; overflow-y: auto; }
-        select, input, textarea { width: 100%; padding: 10px; margin: 10px 0; border: 2px solid #000; border-radius: 5px; font-weight: bold; box-sizing: border-box; }
-        .item-nota { background: #fff; padding: 10px; border: 2px solid #000; margin-bottom: 8px; border-radius: 8px; }
+        .modal-contenido { 
+            background-color: var(--amarillo); 
+            border: 5px solid var(--naranja); 
+            color: var(--negro);
+            border-radius: 20px;
+            padding: 20px;
+            width: 90%;
+            max-width: 450px;
+            text-align: center; 
+        }
+
+        .item-revision {
+            background: white;
+            border: 2px solid var(--negro);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        select, input, textarea { 
+            background: white;
+            border: 2px solid var(--negro);
+            color: var(--negro);
+            font-weight: bold;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
 
 <div class="barra-superior">
-    <b>Mesa: <input type="number" id="mesa_num" value="1" style="width: 45px;"></b> |
-    <b>Persona: <span id="persona_label">1</span></b>
-    <button class="boton-v" style="width: auto; padding: 5px 10px;" onclick="siguiente_persona()">+ Persona</button>
+    <div class="info-mesa">
+        <span>MESA: <input type="number" id="mesa_num" value="1" style="width: 45px;"></span>
+        <span>PERSONA: <span id="persona_label">1</span></span>
+        <button class="boton-persona" style="padding: 5px 10px;" onclick="siguiente_persona()">+ PERSONA</button>
+    </div>
+    <button class="boton-salir" onclick="volverAlPanel()">REGRESAR</button>
 </div>
 
-<h2 class="seccion-titulo">Antojitos</h2>
-<div class="caja-naranja">
-    <b>Panuchos / Salbuts / Garnachas</b>
-    <button class="boton-v" onclick="abrir_config('Panucho', 'pollo:22,huevo:22,molida:22,asado:25', 'Lechuga,Repollo,Tomate,Cebolla')">Pedir Panucho</button>
-    <button class="boton-v" onclick="abrir_config('Salbut', 'pollo:22,huevo:22,molida:22,asado:25', 'Lechuga,Repollo,Tomate,Cebolla')">Pedir Salbut</button>
-    <button class="boton-v" onclick="abrir_config('Garnacha', 'huevo:22,pollo:22,molida:22,asado:25', 'Lechuga,Repollo,Frijol,Tomate,Cebolla Roja')">Pedir Garnacha</button>
+<div class="panel-principal">
+    <div class="seccion-panel">
+        <h3 class="titulo-panel">🌮 ANTOJITOS</h3>
+        <div class="cuerpo-panel">
+            <button class="boton-accion" onclick="abrir_config('Panucho', 'pollo:22,huevo:22,molida:22,asado:25', 'Lechuga,Repollo,Tomate,Cebolla')">PANUCHO</button>
+            <button class="boton-accion" onclick="abrir_config('Salbut', 'pollo:22,huevo:22,molida:22,asado:25', 'Lechuga,Repollo,Tomate,Cebolla')">SALBUT</button>
+            <button class="boton-accion" onclick="abrir_config('Garnacha', 'huevo:22,pollo:22,molida:22,asado:25', 'Lechuga,Repollo,Frijol,Tomate,Cebolla Roja')" style="grid-column: span 2;">GARNACHA</button>
+        </div>
+    </div>
+
+    <div class="seccion-panel">
+        <h3 class="titulo-panel">🌯 SOPES Y TACOS</h3>
+        <div class="cuerpo-panel">
+            <button class="boton-accion" onclick="abrir_config('Sope', 'asado:28,pollo:28,molida:28,huevo:28', 'Frijol,Crema,Salsa Verde,Tomate Asado,Romanita,Cebolla Roja')">SOPE</button>
+            <button class="boton-accion" onclick="abrir_config('Taco', 'asado:25,pollo:25', 'Tortilla,Frijol,Repollo,Tomate Asado,Cebolla Roja')">TACO</button>
+            <button class="boton-accion" onclick="abrir_config('Polcan', 'normal:12,pollo:20,asado:20,molida:20', 'Repollo,Cebolla,Tomate Frito,Tomate Asado,Cebolla Roja')">POLCAN</button>
+            <button class="boton-accion" onclick="abrir_config('Empanada', 'molida:15,queso:15,pollo:15', 'Repollo,Cebolla,Tomate Frito')">EMPANADA</button>
+        </div>
+    </div>
+
+    <div class="seccion-panel">
+        <h3 class="titulo-panel">🍜 SOPAS Y TORTAS</h3>
+        <div class="cuerpo-panel">
+            <button class="boton-accion" onclick="abrir_config('Sopa Sencilla', 'entera:40,media:25', 'Repollo,Cebolla,Tomate Frito')">SOPA SENCILLA</button>
+            <button class="boton-accion" onclick="abrir_config('Sopa Especial', 'entera:65,media:35', 'Pollo,Huevo,Repollo,Cebolla,Tomate Frito')">SOPA ESPECIAL</button>
+            <button class="boton-accion" onclick="abrir_config('Torta', 'ent. asado:70,ent. molida:70,ent. pollo:65,1/2 asado:40,1/2 molida:40,1/2 pollo:35', 'Frijol,Mayonesa,Repollo,Tomate Asado,Lechuga')" style="grid-column: span 2;">TORTA</button>
+        </div>
+    </div>
+
+    <div class="seccion-panel">
+        <h3 class="titulo-panel">🥤 BEBIDAS</h3>
+        <div class="cuerpo-panel">
+            <button class="boton-accion" onclick="abrir_bebida('Refresco', 25, 'Coca-Cola,Negra,Fresa,Fanta,Mundet,Del Valle', 'Vidrio,Desechable')">REFRESCO</button>
+            <button class="boton-accion" onclick="abrir_bebida('Natural', 20, 'Jamaica,Horchata', 'Vaso')">AGUA NATURAL</button>
+            <button class="boton-accion" onclick="abrir_bebida('Desechable', 25, 'Fuze Tea,Agua 1L:22,Agua Chi:18', 'Bote')" style="grid-column: span 2;">OTRAS BEBIDAS</button>
+        </div>
+    </div>
 </div>
 
-<div class="caja-naranja">
-    <b>Sopes / Tacos / Polcanes / Empanadas</b>
-    <button class="boton-v" onclick="abrir_config('Sope', 'asado:28,pollo:28,molida:28,huevo:28', 'Frijol,Crema,Salsa Verde,Tomate Asado,Romanita,Cebolla Roja')">Pedir Sope ($28)</button>
-    <button class="boton-v" onclick="abrir_config('Polcan', 'normal:12,pollo:20,asado:20,molida:20', 'Repollo,Cebolla,Tomate Frito,Tomate Asado,Cebolla Roja')">Pedir Polcan</button>
-    <button class="boton-v" onclick="abrir_config('Taco', 'asado:25,pollo:25', 'Tortilla,Frijol,Repollo,Tomate Asado,Cebolla Roja')">Pedir Taco ($25)</button>
-    <button class="boton-v" onclick="abrir_config('Empanada', 'molida:15,queso:15,pollo:15', 'Repollo,Cebolla,Tomate Frito')">Pedir Empanada ($15)</button>
+<div class="footer-acciones">
+    <button class="btn-confirmar" onclick="ver_nota()"> REVISAR PEDIDO</button>
 </div>
 
-<h2 class="seccion-titulo">Sopas y Tortas</h2>
-<div class="caja-naranja">
-    <button class="boton-v" onclick="abrir_config('Sopa Sencilla', 'entera:40,media:25', 'Repollo,Cebolla,Tomate Frito')">Sopa Sencilla</button>
-    <button class="boton-v" onclick="abrir_config('Sopa Especial', 'entera:65,media:35', 'Pollo,Huevo,Repollo,Cebolla,Tomate Frito')">Sopa Especial</button>
-    <button class="boton-v" onclick="abrir_config('Torta', 'ent. asado:70,ent. molida:70,ent. pollo:65,1/2 asado:40,1/2 molida:40,1/2 pollo:35', 'Frijol,Mayonesa,Repollo,Tomate Asado,Lechuga')">Pedir Torta</button>
-</div>
-
-<h2 class="seccion-titulo">Bebidas</h2>
-<div class="caja-naranja">
-    <b>Refrescos y Naturales</b>
-    <button class="boton-v" onclick="abrir_bebida('Refresco', 25, 'Coca-Cola,Negra,Fresa,Fanta,Mundet,Del Valle', 'Vidrio,Desechable')">Configurar Refresco ($25)</button>
-    <button class="boton-v" onclick="abrir_bebida('Natural', 20, 'Jamaica,Horchata', 'Vaso')">Agua Natural ($20)</button>
-    <button class="boton-v" onclick="abrir_bebida('Desechable', 25, 'Fuze Tea,Agua 1L:22,Agua Chi:18', 'Bote')">Otras Bebidas</button>
-</div>
-
-<div style="padding: 15px;">
-    <button class="boton-v" style="background-color: #000; color: #facc15;" onclick="ver_nota()">REVISAR NOTA Y CONFIRMAR</button>
+<div id="modal_nota" class="modal">
+    <div class="modal-contenido">
+        <h2 style="margin-top:0;"> RESUMEN DE ORDEN</h2>
+        <div id="contenido_nota" style="max-height: 50vh; overflow-y: auto; margin-bottom: 15px;"></div>
+        <button class="boton-accion" style="width: 100%; padding: 15px;" onclick="mandar_cocina()"> ENVIAR A COCINA</button>
+        <button onclick="cerrar_nota()" style="width: 100%; margin-top: 10px; background:none; border:none; cursor:pointer; text-decoration: underline;">VOLVER AL MENU</button>
+    </div>
 </div>
 
 <div id="modal_config" class="modal">
     <div class="modal-contenido">
-        <h3 id="conf_nombre">Configurar</h3>
-        <b>Tipo / Relleno:</b>
+        <h2 id="conf_nombre">CONFIGURAR</h2>
+        <label>RELLENO:</label>
         <select id="conf_tipo"></select>
-        <b>Cantidad:</b>
+        <label>CANTIDAD:</label>
         <input type="number" id="conf_cant" value="1" min="1">
-        <b>Sin ingredientes:</b>
-        <div id="conf_ingredientes"></div>
-        <b>Sugerencia:</b>
-        <textarea id="conf_nota" placeholder="Ej. Bien tostado..."></textarea>
-        <button class="boton-v" onclick="guardar_comida()">Agregar a Persona</button>
-        <button onclick="cerrar_modal()" style="width: 100%; margin-top: 10px;">Cancelar</button>
+        <div id="conf_ingredientes" style="text-align: left; padding: 10px;"></div>
+        <textarea id="conf_nota" placeholder="Notas..."></textarea>
+        <button class="boton-accion" style="width:100%" onclick="guardar_comida()">AGREGAR AL PEDIDO</button>
+        <button onclick="cerrar_modal()" style="width:100%; margin-top:10px; background:none; border:none;">CANCELAR</button>
     </div>
 </div>
 
 <div id="modal_bebida" class="modal">
     <div class="modal-contenido">
-        <h3>Configurar Bebida</h3>
-        <b>Sabor:</b>
+        <h2>BEBIDA</h2>
         <select id="beb_sabor"></select>
-        <b>Envase:</b>
         <select id="beb_envase"></select>
-        <button class="boton-v" onclick="guardar_bebida()">Agregar Bebida</button>
-        <button onclick="cerrar_modal_b()" style="width: 100%; margin-top: 10px;">Cancelar</button>
-    </div>
-</div>
-
-<div id="modal_nota" class="modal">
-    <div class="modal-contenido">
-        <h2 style="text-align: center;">NOTA DE MESA</h2>
-        <div id="contenido_nota" style="background: #fff; padding: 10px; border: 2px solid #000; max-height: 300px; overflow-y: auto;"></div>
-        <br>
-        <button class="boton-v" onclick="mandar_cocina()">ENVIAR A COCINA</button>
-        <button onclick="cerrar_nota()" style="width: 100%; margin-top: 10px;">Cerrar</button>
+        <button class="boton-accion" style="width:100%" onclick="guardar_bebida()">AGREGAR BEBIDA</button>
+        <button onclick="cerrar_modal_b()" style="width:100%; margin-top:10px; background:none; border:none;">CANCELAR</button>
     </div>
 </div>
 
 <script>
+    // FUNCIÓN AGREGADA PARA LA REDIRECCIÓN INTELIGENTE
+    function volverAlPanel() {
+        const sesion = JSON.parse(localStorage.getItem("sesion"));
+        if (sesion && (sesion.usuario === "admin" || sesion.usuario === "administrador")) {
+            window.location.href = "admin.html";
+        } else {
+            window.location.href = "panel.html";
+        }
+    }
+
     var pedido_mesa = [];
     var persona_actual = 1;
     var prod_temp = "";
-    var precio_bebida_temp = 25;
 
-    function abrir_config(nombre, tipos, ings) {
-        prod_temp = nombre;
-        document.getElementById('conf_nombre').innerText = nombre;
-        document.getElementById('conf_cant').value = 1;
-        document.getElementById('conf_nota').value = "";
-        var sel = document.getElementById('conf_tipo');
-        sel.innerHTML = "";
-        tipos.split(",").forEach(t => {
-            var d = t.split(":");
-            sel.innerHTML += `<option value="${d[1]}">${d[0].toUpperCase()} ($${d[1]})</option>`;
+    function ver_nota() {
+        var area = document.getElementById('contenido_nota');
+        area.innerHTML = "";
+        var total = 0;
+        if(pedido_mesa.length === 0) {
+            area.innerHTML = "<p>No hay productos en el pedido.</p>";
+        }
+        pedido_mesa.forEach((p, i) => {
+            var sub = p.precio * p.cant;
+            total += sub;
+            area.innerHTML += `
+                <div class="item-revision">
+                    <b>P${p.persona}:</b> ${p.cant}x ${p.nombre} ($${sub})
+                    <div style="margin-top:10px;">
+                        <button class="boton-accion" style="padding:5px 15px; width:auto; display:inline-block; margin-right:5px;" onclick="sumar_uno(${i})">+1</button>
+                        <button class="boton-accion" style="padding:5px 15px; width:auto; display:inline-block; background-color:#ff4444 !important; color:white !important;" onclick="quitar(${i})">X</button>
+                    </div>
+                    <div style="font-size:12px; margin-top:5px; color:#555;">${p.nota}</div>
+                </div>`;
         });
-        var div_i = document.getElementById('conf_ingredientes');
-        div_i.innerHTML = "";
-        ings.split(",").forEach(i => {
-            div_i.innerHTML += `<label><input type="checkbox" class="ch_i" value="${i}"> Sin ${i}</label><br>`;
-        });
-        document.getElementById('modal_config').style.display = "flex";
+        area.innerHTML += `<h3 style="border-top:2px solid black; padding-top:10px;">TOTAL A PAGAR: $${total}</h3>`;
+        document.getElementById('modal_nota').style.display = "flex";
     }
 
-    function abrir_bebida(nombre, precio, sabores, envases) {
-        prod_temp = nombre;
-        precio_bebida_temp = precio;
-        var s_sel = document.getElementById('beb_sabor');
-        s_sel.innerHTML = "";
-        sabores.split(",").forEach(s => {
-            var d = s.split(":");
-            var p = d[1] ? d[1] : precio;
-            s_sel.innerHTML += `<option value="${p}">${d[0]}</option>`;
-        });
-        var e_sel = document.getElementById('beb_envase');
-        e_sel.innerHTML = "";
-        envases.split(",").forEach(e => {
-            e_sel.innerHTML += `<option value="${e}">${e}</option>`;
-        });
-        document.getElementById('modal_bebida').style.display = "flex";
+    function sumar_uno(index) {
+        pedido_mesa[index].cant += 1;
+        ver_nota(); 
+    }
+
+    function quitar(index) { 
+        pedido_mesa.splice(index, 1); 
+        ver_nota(); 
     }
 
     function guardar_comida() {
@@ -149,7 +290,7 @@
         pedido_mesa.push({
             persona: persona_actual,
             nombre: prod_temp + " " + s.options[s.selectedIndex].text,
-            precio: s.value,
+            precio: parseFloat(s.value),
             cant: parseInt(document.getElementById('conf_cant').value),
             nota: (q.length > 0 ? "Sin: "+q.join(",") : "") + " " + document.getElementById('conf_nota').value
         });
@@ -162,49 +303,48 @@
         pedido_mesa.push({
             persona: persona_actual,
             nombre: s.options[s.selectedIndex].text + " (" + e.value + ")",
-            precio: s.value,
+            precio: parseFloat(s.value),
             cant: 1,
             nota: "Fría"
         });
         cerrar_modal_b();
     }
 
-    function ver_nota() {
-        var area = document.getElementById('contenido_nota');
-        area.innerHTML = "";
-        var total = 0;
-        pedido_mesa.forEach((p, i) => {
-            var sub = p.precio * p.cant;
-            total += sub;
-            area.innerHTML += `<div class="item-nota">
-                <b>P${p.persona}:</b> ${p.cant}x ${p.nombre} ($${sub})
-                <br><button onclick="cambiar_cant(${i}, 1)">+1</button> 
-                <button onclick="quitar(${i})">Eliminar</button>
-                <br><small>${p.nota}</small></div>`;
+    function siguiente_persona() { persona_actual++; document.getElementById('persona_label').innerText = persona_actual; }
+    function mandar_cocina() { if(pedido_mesa.length > 0) { alert("¡PEDIDO ENVIADO A COCINA!"); location.reload(); } }
+    
+    function abrir_config(n, t, i) {
+        prod_temp = n;
+        document.getElementById('conf_nombre').innerText = n;
+        document.getElementById('conf_cant').value = 1;
+        var sel = document.getElementById('conf_tipo');
+        sel.innerHTML = "";
+        t.split(",").forEach(x => {
+            var d = x.split(":");
+            sel.innerHTML += `<option value="${d[1]}">${d[0].toUpperCase()} ($${d[1]})</option>`;
         });
-        area.innerHTML += `<h3 style="text-align:right;">TOTAL: $${total}</h3>`;
-        document.getElementById('modal_nota').style.display = "flex";
+        var div_i = document.getElementById('conf_ingredientes');
+        div_i.innerHTML = "";
+        i.split(",").forEach(x => {
+            div_i.innerHTML += `<label style="display:block;"><input type="checkbox" class="ch_i" value="${x}"> SIN ${x}</label>`;
+        });
+        document.getElementById('modal_config').style.display = "flex";
     }
 
-    function cambiar_cant(index, val) {
-        pedido_mesa[index].cant += val;
-        ver_nota();
+    function abrir_bebida(n, p, s, e) {
+        prod_temp = n;
+        var s_sel = document.getElementById('beb_sabor');
+        s_sel.innerHTML = "";
+        s.split(",").forEach(x => {
+            var d = x.split(":");
+            s_sel.innerHTML += `<option value="${d[1] || p}">${d[0]}</option>`;
+        });
+        var e_sel = document.getElementById('beb_envase');
+        e_sel.innerHTML = "";
+        e.split(",").forEach(x => { e_sel.innerHTML += `<option value="${x}">${x}</option>`; });
+        document.getElementById('modal_bebida').style.display = "flex";
     }
-
-    function quitar(index) {
-        pedido_mesa.splice(index, 1);
-        ver_nota();
-    }
-
-    function siguiente_persona() {
-        persona_actual++;
-        document.getElementById('persona_label').innerText = persona_actual;
-    }
-
-    function mandar_cocina() {
-        if(pedido_mesa.length > 0) { alert("¡PEDIDO ENVIADO!"); location.reload(); }
-    }
-
+    
     function cerrar_modal() { document.getElementById('modal_config').style.display = "none"; }
     function cerrar_modal_b() { document.getElementById('modal_bebida').style.display = "none"; }
     function cerrar_nota() { document.getElementById('modal_nota').style.display = "none"; }

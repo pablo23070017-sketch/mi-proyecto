@@ -2,165 +2,175 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pedidos Realizados - Administrador</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Pedidos - Tío Garnacha</title>
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #fff7ed;
-            margin: 0;
-            padding: 0;
+        :root {
+            --amarillo: #facc15;
+            --naranja: #ea580c;
+            --negro: #000000;
+            --verde: #16a34a;
+            --blanco: #ffffff;
         }
 
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--amarillo);
+            margin: 0;
+            padding: 0;
+            color: var(--negro);
+        }
+
+        /* HEADER CON LOGO Y BOTÓN INTELIGENTE */
         header {
             width: 100%;
-            background-color: #ea580c;
-            color: white;
-            padding: 20px 40px;
+            background-color: var(--naranja);
+            padding: 10px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-weight: bold;
+            border-bottom: 4px solid var(--negro);
         }
 
+        .logo-header {
+            width: 180px;
+            height: 80px;
+
+            background-color: #fff;
+        }
+
+        .header-titulo {
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        /* TABLA ESTILO TÍO GARNACHA */
         h1 {
             text-align: center;
-            color: #ea580c;
-            margin: 30px 0;
+            text-transform: uppercase;
+            margin: 25px 0;
         }
 
         .table-container {
-            width: 90%;
-            max-width: 1000px;
-            margin: 0 auto 50px auto;
+            width: 95%;
+            max-width: 1100px;
+            margin: 0 auto 30px auto;
             overflow-x: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            background-color: #fff1e0;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        th, td {
-            padding: 15px;
-            text-align: left;
+            background-color: var(--blanco);
+            border: 3px solid var(--negro);
+            box-shadow: 10px 10px 0px var(--negro);
         }
 
         th {
-            background-color: #ea580c;
-            color: white;
+            background-color: var(--naranja);
+            color: var(--negro);
+            padding: 15px;
+            text-align: left;
+            border-bottom: 4px solid var(--negro);
+            border-right: 2px solid var(--negro);
+            text-transform: uppercase;
         }
 
-        tr:nth-child(even) {
-            background-color: #ffe6cc;
+        td {
+            padding: 12px;
+            border: 2px solid var(--negro);
+            font-weight: bold;
         }
 
-        tr:hover {
-            background-color: #ffdd99;
-        }
+        tr:nth-child(even) { background-color: #fff4e6; }
+        tr:hover { background-color: var(--amarillo); }
 
+        /* BOTÓN VERDE DE REGRESO */
         .back-btn {
-            display: block;
-            margin: 20px auto;
-            padding: 12px 25px;
-            background-color: #ea580c;
-            color: white;
-            border: none;
+            background-color: var(--verde);
+            color: var(--negro);
+            border: 3px solid var(--negro);
+            padding: 10px 25px;
             border-radius: 10px;
-            font-size: 1rem;
+            font-weight: bold;
             cursor: pointer;
-        }
-
-        .back-btn:hover {
-            background-color: #c2410c;
-        }
-
-        @media(max-width: 600px) {
-            th, td {
-                padding: 10px;
-                font-size: 0.9rem;
-            }
+            text-transform: uppercase;
+            margin-right: 20px;
         }
     </style>
 </head>
 <body>
 
     <header>
-        Sistema Tío Granacha
-        <span>Administrador</span>
+        <img src="imagenes/Log2.png" alt="Logo" class="logo-header">
+        <div class="header-titulo">
+            <div style="font-size: 1.2rem; font-weight: bold;">TÍO GARNACHA</div>
+            <small id="rol-texto">HISTORIAL DE VENTAS</small>
+        </div>
+        <button class="back-btn" onclick="volverAlPanel()">REGRESAR</button>
     </header>
 
-    <h1>Pedidos Realizados</h1>
+    <h1>Registro de Pedidos</h1>
 
     <div class="table-container">
         <table id="pedidosTable">
             <thead>
                 <tr>
-                    <th>ID Pedido</th>
+                    <th>ID</th>
                     <th>Mesero</th>
                     <th>Productos</th>
                     <th>Total</th>
-                    <th>Fecha / Hora</th>
-                    <th>Tipo de Pago</th>
+                    <th>Hora</th>
+                    <th>Estado</th>
                 </tr>
             </thead>
             <tbody>
-                <!-- Los pedidos se llenarán aquí -->
-            </tbody>
+                </tbody>
         </table>
     </div>
 
-    <button class="back-btn" onclick="window.location.href='admin.html'">Volver al Panel</button>
-
     <script>
-        // Suponemos que los pedidos se guardan en localStorage como 'pedidos'
-        let pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
+        // FUNCIÓN CLAVE: Detecta el rol y redirige al panel correcto
+        function volverAlPanel() {
+            const sesion = JSON.parse(localStorage.getItem("sesion"));
+            
+            if (sesion && (sesion.usuario === "admin" || sesion.usuario === "administrador")) {
+                window.location.href = "admin.html"; // Panel del Admin
+            } else {
+                window.location.href = "panel.html"; // Panel del Mesero
+            }
+        }
 
+        // Cargar los pedidos de la memoria
+        let pedidos = JSON.parse(localStorage.getItem('pedidos_cocina')) || [];
         const tbody = document.querySelector("#pedidosTable tbody");
 
         if(pedidos.length === 0) {
-            const row = document.createElement("tr");
-            const cell = document.createElement("td");
-            cell.colSpan = 6;
-            cell.textContent = "No hay pedidos realizados.";
-            cell.style.textAlign = "center";
-            row.appendChild(cell);
-            tbody.appendChild(row);
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px;">No hay pedidos registrados.</td></tr>`;
         } else {
-            pedidos.forEach((pedido, index) => {
+            pedidos.forEach((pedido) => {
                 const row = document.createElement("tr");
+                const productosTexto = pedido.items.map(i => `${i.cant}x ${i.nombre}`).join(", ");
+                
+                let totalPedido = 0;
+                pedido.items.forEach(i => totalPedido += (i.precio * i.cant));
 
-                const idCell = document.createElement("td");
-                idCell.textContent = pedido.id || index + 1;
-
-                const meseroCell = document.createElement("td");
-                meseroCell.textContent = pedido.mesero;
-
-                const productosCell = document.createElement("td");
-                productosCell.textContent = pedido.productos.join(", ");
-
-                const totalCell = document.createElement("td");
-                totalCell.textContent = `$${pedido.total.toFixed(2)}`;
-
-                const fechaCell = document.createElement("td");
-                fechaCell.textContent = pedido.fecha;
-
-                const pagoCell = document.createElement("td");
-                pagoCell.textContent = pedido.tipoPago;
-
-                row.appendChild(idCell);
-                row.appendChild(meseroCell);
-                row.appendChild(productosCell);
-                row.appendChild(totalCell);
-                row.appendChild(fechaCell);
-                row.appendChild(pagoCell);
-
+                row.innerHTML = `
+                    <td>${pedido.id.toString().slice(-5)}</td>
+                    <td>${pedido.mesero}</td>
+                    <td>${productosTexto}</td>
+                    <td style="color: #16a34a;">$${totalPedido.toFixed(2)}</td>
+                    <td>${pedido.hora}</td>
+                    <td>${pedido.estado || 'Pendiente'}</td>
+                `;
                 tbody.appendChild(row);
             });
+        }
+
+        // Mostrar quién está viendo la página en el header
+        const sesionActual = JSON.parse(localStorage.getItem("sesion"));
+        if (sesionActual) {
+            document.getElementById("rol-texto").innerText = "PANEL: " + sesionActual.usuario.toUpperCase();
         }
     </script>
 </body>

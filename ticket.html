@@ -1,124 +1,189 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Ticket del Pedido</title>
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background: #ff8c42;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket de Venta - Tío Garnacha</title>
+    <style>
+        :root {
+            --amarillo: #facc15;
+            --naranja: #ea580c;
+            --negro: #000000;
+            --verde: #16a34a;
+            --blanco: #ffffff;
+        }
 
-.ticket {
-    background: #f5f5f5;
-    padding: 30px;
-    border: 3px dashed #000;
-    width: 400px;
-    border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.3);
-}
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--amarillo);
+            margin: 0;
+            padding: 0;
+            color: var(--negro);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
 
-.ticket h2 {
-    text-align: center;
-    color: #ff6600;
-}
+        /* HEADER COHERENTE CON TODO EL SISTEMA */
+        header {
+            width: 100%;
+            background-color: var(--naranja);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--negro);
+        }
 
-.ticket pre {
-    font-family: monospace;
-    font-size: 14px;
-}
+        .logo-header {
+            width: 180px;
+            height: 80px;
 
-.total {
-    font-weight: bold;
-    margin-top: 10px;
-}
+            background-color: #fff;
+        }
 
-.estado {
-    color: green;
-    font-weight: bold;
-}
+        .header-titulo { text-align: center; flex-grow: 1; }
 
-/* Botón cerrar sesión */
-.btn-cerrar {
-    margin-top: 15px;
-    width: 100%;
-    padding: 10px;
-    background: #ff6600;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-}
+        .btn-regresar {
+            background-color: var(--verde);
+            color: var(--negro);
+            border: 2px solid var(--negro);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 20px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
 
-.btn-cerrar:hover {
-    background: #e65c00;
-}
-</style>
+        /* DISEÑO DEL TICKET */
+        .ticket-container {
+            background: var(--blanco);
+            padding: 30px;
+            border: 3px dashed var(--negro); /* Estilo de recorte de ticket */
+            width: 90%;
+            max-width: 380px;
+            margin: 40px auto;
+            border-radius: 15px;
+            box-shadow: 10px 10px 0px var(--negro);
+            text-align: center;
+        }
+
+        .ticket-container h2 {
+            margin-top: 0;
+            color: var(--naranja);
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--negro);
+            padding-bottom: 10px;
+        }
+
+        pre {
+            font-family: 'Courier New', Courier, monospace;
+            text-align: left;
+            white-space: pre-wrap;
+            font-size: 14px;
+            background: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        /* BOTÓN CERRAR SESIÓN (VERDE) */
+        .btn-cerrar {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background-color: var(--verde);
+            color: var(--negro);
+            border: 2px solid var(--negro);
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn-cerrar:active { transform: scale(0.98); }
+    </style>
 </head>
 <body>
-<div class="ticket">
-    <h2>Ticket del Pedido</h2>
-    <pre id="contenidoTicket"></pre>
 
-    <!-- Botón agregado -->
-    <button class="btn-cerrar" onclick="cerrarSesion()">Cerrar sesión</button>
-</div>
+    <header>
+        <img src="imagenes/Log2.png" alt="Logo" class="logo-header">
+        <div class="header-titulo">
+            <div style="font-size: 1.2rem; font-weight: bold;">TÍO GARNACHA</div>
+            <small>COMPROBANTE DE PAGO</small>
+        </div>
+        <button class="btn-regresar" onclick="volverAlPanel()">REGRESAR</button>
+    </header>
 
-<script>
-function generarTicket() {
-    // Traer datos desde localStorage
-    const mesa = localStorage.getItem("mesa") || "N/A";
-    const pedidos = JSON.parse(localStorage.getItem("pedidos") || "[]");
-    const fecha = new Date().toLocaleDateString();
+    <div class="ticket-container">
+        <h2>Ticket de Venta</h2>
+        <pre id="contenidoTicket">Generando ticket...</pre>
 
-    let total = 0;
-    let lineasPedidos = "";
+        <button class="btn-cerrar" onclick="cerrarSesion()">Cerrar sesión</button>
+    </div>
 
-    pedidos.forEach(p => {
-        let ingredientes = p.ingredientes.join(", ");
-        lineasPedidos += `${p.producto} x${p.cantidad} (${ingredientes})\n`;
-        let precioUnitario = 0;
-        switch(p.producto.toLowerCase()) {
-            case "tacos": precioUnitario = 20; break;
-            case "hamburguesa": precioUnitario = 50; break;
-            case "refresco": precioUnitario = 18; break;
-            case "horchata": precioUnitario = 20; break;
-            default: precioUnitario = 30; break;
+    <script>
+        // REDIRECCIÓN INTELIGENTE DEPENDIENDO DEL ROL
+        function volverAlPanel() {
+            const sesion = JSON.parse(localStorage.getItem("sesion"));
+            if (sesion && (sesion.usuario === "admin" || sesion.usuario === "administrador")) {
+                window.location.href = "admin.html";
+            } else {
+                window.location.href = "panel.html";
+            }
         }
-        total += precioUnitario * p.cantidad;
-    });
 
-    const ticketTexto = 
-`TÍO GRANACHA
-Ticket de Venta
+        function generarTicket() {
+            // Traer datos desde localStorage (ajustado a tu lógica de pedidos_cocina)
+            const mesa = localStorage.getItem("mesa_actual") || "1";
+            const pedidos = JSON.parse(localStorage.getItem("pedidos_cocina") || "[]");
+            const fecha = new Date().toLocaleDateString();
+            const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            let total = 0;
+            let lineasPedidos = "";
+
+            // Buscamos el último pedido realizado para esta mesa o mostramos el resumen general
+            if (pedidos.length > 0) {
+                const ultimoPedido = pedidos[pedidos.length - 1];
+                ultimoPedido.items.forEach(p => {
+                    let subtotal = p.precio * p.cant;
+                    total += subtotal;
+                    lineasPedidos += `${p.nombre.substring(0,15)} x${p.cant} ... $${subtotal}\n`;
+                });
+            }
+
+            const ticketTexto = 
+`DON EMILIANO - MOTUL YUCATÁN
 -------------------------------
-Mesa: ${mesa}
-Fecha: ${fecha}
+FECHA: ${fecha}
+HORA:  ${hora}
+MESA:  ${mesa}
+-------------------------------
+PRODUCTO          CANT   TOTAL
 -------------------------------
 ${lineasPedidos}-------------------------------
-TOTAL: $${total}
-Tipo de pago: Efectivo
-Estado: Pedido Realizado ✔
+TOTAL A PAGAR:      $${total.toFixed(2)}
 -------------------------------
-Gracias por su compra`;
+ESTADO: PEDIDO CONFIRMADO ✔
+PAGO: EFECTIVO
+-------------------------------
+¡Gracias por su preferencia!
+Vuelva pronto.`;
 
-    document.getElementById("contenidoTicket").innerText = ticketTexto;
-}
+            document.getElementById("contenidoTicket").innerText = ticketTexto;
+        }
 
-// Función cerrar sesión (agregada)
-function cerrarSesion() {
-    localStorage.clear(); // borra datos
-    window.location.href = "index.html"; // regresa al login
-}
+        function cerrarSesion() {
+            localStorage.removeItem("sesion"); // Solo borramos la sesión, no los pedidos
+            window.location.href = "index.html";
+        }
 
-// Generar ticket al cargar
-window.onload = generarTicket;
-</script>
+        // Generar ticket al cargar
+        window.onload = generarTicket;
+    </script>
 </body>
 </html>

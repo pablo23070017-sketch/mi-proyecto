@@ -1,177 +1,266 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Gestionar Menú - Tío Garnacha</title>
-<style>
-    body {
-        font-family: 'Arial', sans-serif;
-        /* REGLA: Fondo Amarillo solicitado */
-        background-color: #facc15; 
-        padding: 20px;
-        margin: 0;
-        /* REGLA: Letras negras global para buen contraste */
-        color: #000000; 
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Menú - Tío Garnacha</title>
+    <style>
+        :root {
+            --amarillo: #facc15;
+            --naranja: #ea580c;
+            --negro: #000000;
+            --verde: #16a34a;
+            --blanco: #ffffff;
+        }
 
-    h1.titulo {
-        text-align: center;
-        margin-bottom: 20px;
-        font-weight: bold;
-        text-transform: uppercase;
-    }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--amarillo); 
+            margin: 0;
+            color: var(--negro); 
+        }
 
-    h2.seccion-titulo {
-        margin-bottom: 15px;
-        font-size: 1.8rem;
-        text-align: center;
-        text-decoration: underline;
-    }
+        /* HEADER COHERENTE */
+        header {
+            width: 100%;
+            background-color: var(--naranja);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--negro);
+        }
 
-    /* REGLA: Botones Verdes (Acción/Éxito) */
-    .boton-regresar {
-        display: block;
-        margin: 0 auto 30px auto;
-        padding: 12px 25px;
-        background-color: #16a34a; 
-        color: #000000;
-        border: 2px solid #000000;
-        border-radius: 8px;
-        font-weight: bold;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: 0.3s;
-    }
+        .logo-header {
+            width: 180px;
+            height: 80px;
 
-    .boton-regresar:hover {
-        background-color: #15803d;
-        transform: scale(1.05);
-    }
+            background-color: #fff;
+        }
 
-    .contenedor-principal {
-        display: flex;
-        justify-content: center;
-        gap: 40px;
-        flex-wrap: wrap;
-        align-items: flex-start;
-    }
+        .header-titulo { text-align: center; flex-grow: 1; }
 
-    .contenedor {
-        display: flex;
-        flex-direction: column;
-        gap: 25px;
-        align-items: center;
-        min-width: 280px;
-    }
+        .btn-regresar {
+            background-color: var(--verde);
+            color: var(--negro);
+            border: 2px solid var(--negro);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 20px;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
 
-    /* REGLA: Recuadros Anaranjados para los productos */
-    .item {
-        background-color: #ea580c; 
-        border: 3px solid #000000;
-        border-radius: 18px;
-        padding: 20px;
-        text-align: center;
-        width: 240px;
-        box-shadow: 5px 5px 0px #000000; /* Estilo visual limpio y marcado */
-    }
+        /* CONTENEDOR PRINCIPAL */
+        .contenedor-principal {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-    .item img {
-        width: 100%;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 12px;
-        border: 2px solid #000000;
-        margin-bottom: 12px;
-    }
+        .grid-categorias {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            width: 95%;
+            max-width: 1200px;
+        }
 
-    .item h3, .item p {
-        /* REGLA: Letras negras sobre naranja */
-        color: #000000; 
-        margin: 5px 0;
-        font-weight: bold;
-    }
+        .seccion-cat {
+            background-color: rgba(0,0,0,0.05);
+            padding: 15px;
+            border-radius: 15px;
+        }
 
-    /* REGLA: Botones Verdes dentro de los recuadros */
-    .item button {
-        margin-top: 10px;
-        padding: 10px 15px;
-        border: 2px solid #000000;
-        border-radius: 10px;
-        cursor: pointer;
-        background-color: #16a34a;
-        color: #000000;
-        font-weight: bold;
-        transition: 0.2s;
-    }
+        .seccion-titulo {
+            text-align: center;
+            text-transform: uppercase;
+            background: var(--negro);
+            color: var(--amarillo);
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
 
-    .item button.bloqueado {
-        background-color: #9ca3af; /* Gris para estado inactivo */
-        color: #000000;
-    }
+        /* TARJETAS NARANJAS*/
+        .item-menu {
+            background-color: var(--naranja);
+            border: 3px solid var(--negro);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 4px 4px 0px var(--negro);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-    .item button:hover {
-        filter: brightness(1.1);
-    }
-</style>
+        .item-menu h3 { margin: 0; font-size: 1.1rem; }
+        .item-menu p { margin: 5px 0; font-weight: bold; font-size: 1.2rem; }
+
+        /* BOTONES DE BLOQUEO */
+        .btn-bloqueo {
+            width: 100%;
+            background-color: var(--verde);
+            color: var(--negro);
+            border: 2px solid var(--negro);
+            border-radius: 6px;
+            padding: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .bloqueado {
+            background-color: #9ca3af !important;
+            opacity: 0.6;
+        }
+
+        .btn-add {
+            background-color: var(--verde);
+            color: var(--negro);
+            border: 2px solid var(--negro);
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 25px;
+        }
+    </style>
 </head>
 <body>
 
-<h1 class="titulo">Gestionar Menú - Tío Garnacha</h1>
-
-<button class="boton-regresar" onclick="alert('Regresando...')">
-    ← Regresar al Panel
-</button>
+<header>
+    <img src="imagenes/Log2.png" alt="Logo" class="logo-header">
+    <div class="header-titulo">
+        <h2 style="margin:0; font-size: 1.3rem;">TÍO GARNACHA</h2>
+        <small>GESTIÓN DE DISPONIBILIDAD</small>
+    </div>
+    <button class="btn-regresar" onclick="volverAlPanel()">REGRESAR</button>
+</header>
 
 <div class="contenedor-principal">
+    <h1>Panel de Inventario</h1>
+    
+    <button class="btn-add" onclick="alert('Función para agregar nuevo producto próximamente')">+ AGREGAR NUEVO AL MENÚ</button>
 
-    <div class="contenedor">
-        <h2 class="seccion-titulo">Comidas</h2>
-        <div class="item">
-            <img src="imagenes/panucho.jpg" alt="Panuchos">
-            <h3>Panuchos</h3>
-            <p>$35.00</p>
-            <button onclick="toggleDisponibilidad(this)">Bloquear</button>
+    <div class="grid-categorias">
+        
+        <div class="seccion-cat">
+            <h2 class="seccion-titulo">Antojitos</h2>
+            <div class="item-menu">
+                <h3>PANUCHOS</h3>
+                <p>$22.00</p>
+                <button class="btn-bloqueo" onclick="toggleItem(this)">BLOQUEAR</button>
+            </div>
+            <div class="item-menu">
+                <h3>SALBUTES</h3>
+                <p>$22.00</p>
+                <button class="btn-bloqueo" onclick="toggleItem(this)">BLOQUEAR</button>
+            </div>
+            <div class="item-menu">
+                <h3>GARNACHAS</h3>
+                <p>$22.00</p>
+                <button class="btn-bloqueo" onclick="toggleItem(this)">BLOQUEAR</button>
+            </div>
         </div>
-        <div class="item">
-            <img src="imagenes/salbute.jpg" alt="Salbutes">
-            <h3>Salbutes</h3>
-            <p>$35.00</p>
-            <button onclick="toggleDisponibilidad(this)">Bloquear</button>
+
+        <div class="seccion-cat">
+            <h2 class="seccion-titulo">Sopes y Tacos</h2>
+            <div class="item-menu">
+                <h3>SOPES</h3>
+                <p>$28.00</p>
+                <button class="btn-bloqueo" onclick="toggleItem(this)">BLOQUEAR</button>
+            </div>
+            <div class="item-menu">
+                <h3>TACOS</h3>
+                <p>$25.00</p>
+                <button class="btn-bloqueo" onclick="toggleItem(this)">BLOQUEAR</button>
+            </div>
+            <div class="item-menu">
+                <h3>POLCANES</h3>
+                <p>$20.00</p>
+                <button class="btn-bloqueo" onclick="toggleItem(this)">BLOQUEAR</button>
+            </div>
+            <div class="item-menu">
+                <h3>EMPANADAS</h3>
+                <p>$15.00</p>
+                <button class="btn-bloqueo" onclick="toggleItem(this)">BLOQUEAR</button>
+            </div>
         </div>
+
+        <div class="seccion-cat">
+            <h2 class="seccion-titulo">Sopas y Tortas</h2>
+            <div class="item-menu">
+                <h3>SOPA SENCILLA</h3>
+                <p>$40.00</p>
+                <button class="btn-bloqueo" onclick="toggleItem(this)">BLOQUEAR</button>
+            </div>
+            <div class="item-menu">
+                <h3>SOPA ESPECIAL</h3>
+                <p>$65.00</p>
+                <button class="btn-bloqueo" onclick="toggleItem(this)">BLOQUEAR</button>
+            </div>
+            <div class="item-menu">
+                <h3>TORTA</h3>
+                <p>$70.00</p>
+                <button class="btn-bloqueo" onclick="toggleItem(this)">BLOQUEAR</button>
+            </div>
+        </div>
+
+        <div class="seccion-cat">
+            <h2 class="seccion-titulo">Bebidas</h2>
+            <div class="item-menu">
+                <h3>REFRESCOS</h3>
+                <p>$25.00</p>
+                <button class="btn-bloqueo" onclick="toggleItem(this)">BLOQUEAR</button>
+            </div>
+            <div class="item-menu">
+                <h3>NATURALES</h3>
+                <p>$20.00</p>
+                <button class="btn-bloqueo" onclick="toggleItem(this)">BLOQUEAR</button>
+            </div>
+            <div class="item-menu">
+                <h3>DESECHABLES</h3>
+                <p>$25.00</p>
+                <button class="btn-bloqueo" onclick="toggleItem(this)">BLOQUEAR</button>
+            </div>
+        </div>
+
     </div>
-
-    <div class="contenedor">
-        <h2 class="seccion-titulo">Bebidas</h2>
-        <div class="item">
-            <img src="imagenes/coca.jpg" alt="Coca-Cola">
-            <h3>Coca-Cola</h3>
-            <p>$18.00</p>
-            <button onclick="toggleDisponibilidad(this)">Bloquear</button>
-        </div>
-        <div class="item">
-            <img src="imagenes/jamaica.jpg" alt="Agua Natural">
-            <h3>Jugo Natural</h3>
-            <p>$15.00</p>
-            <button onclick="toggleDisponibilidad(this)">Bloquear</button>
-        </div>
-    </div>
-
 </div>
 
 <script>
-function toggleDisponibilidad(button) {
-    if(button.classList.contains('bloqueado')) {
-        button.classList.remove('bloqueado');
-        button.style.backgroundColor = '#16a34a';
-        button.textContent = 'Bloquear';
-        button.parentElement.style.opacity = '1';
-    } else {
-        button.classList.add('bloqueado');
-        button.style.backgroundColor = '#9ca3af'; 
-        button.textContent = 'Desbloquear';
-        button.parentElement.style.opacity = '0.6';
+    // REDIRECCIÓN INTELIGENTE
+    function volverAlPanel() {
+        const sesion = JSON.parse(localStorage.getItem("sesion"));
+        if (sesion && (sesion.usuario === "admin" || sesion.usuario === "administrador")) {
+            window.location.href = "admin.html";
+        } else {
+            window.location.href = "panel.html";
+        }
     }
-}
+
+    // FUNCIÓN PARA BLOQUEAR PRODUCTOS
+    function toggleItem(btn) {
+        const item = btn.parentElement;
+        if(btn.classList.contains('bloqueado')) {
+            btn.classList.remove('bloqueado');
+            btn.innerText = "BLOQUEAR";
+            item.style.opacity = "1";
+            item.style.filter = "grayscale(0%)";
+        } else {
+            btn.classList.add('bloqueado');
+            btn.innerText = "DESBLOQUEAR";
+            item.style.opacity = "0.5";
+            item.style.filter = "grayscale(100%)";
+        }
+    }
 </script>
 
 </body>
