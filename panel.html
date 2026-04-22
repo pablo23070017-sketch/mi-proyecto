@@ -13,24 +13,24 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
+            min-height: 100vh; /* Para asegurar que el contenido ocupe la pantalla */
         }
         
-        /* HEADER MODIFICADO: Ahora es un contenedor flex para alinear todo */
         .header { 
             background-color: #FFA832; 
             width: 100%; 
             padding: 10px 0; 
             border-bottom: 4px solid #000; 
             display: flex;
-            justify-content: space-between; /* Separa logo, título y botón */
+            justify-content: space-between; 
             align-items: center;
         }
 
-        /* Estilo para el logo en la esquina izquierda */
         .logo-header {
             width: 180px;
             height: 80px;
             background-color: #fff;
+            margin-left: 20px;
         }
         
         .contenedor-botones { 
@@ -64,7 +64,6 @@
 
         .icono { font-size: 40px; margin-bottom: 10px; }
 
-        /* BOTÓN MOVIDO A LA DERECHA DEL HEADER */
         .btn-salir {
             background-color: #92e27a; 
             border: 2px solid #000;
@@ -72,8 +71,44 @@
             border-radius: 10px;
             font-weight: bold;
             cursor: pointer;
-            margin-right: 20px; /* Margen a la derecha */
             font-size: 0.8rem;
+        }
+
+        /* ESTILO BOTÓN DE AYUDA */
+        .btn-ayuda {
+            background-color: #fff;
+            border: 2px solid #000;
+            padding: 8px 12px;
+            border-radius: 50%; /* Circular */
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* CONTENEDOR INFO INFERIOR IZQUIERDA */
+        .info-local {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #FFA832;
+            border: 3px solid #000;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            box-shadow: 5px 5px 0px #000;
+            text-align: left;
+            line-height: 1.4;
+        }
+
+        /* Pequeña etiqueta para el atajo de teclado */
+        .tecla-atajo {
+            margin-top: 10px;
+            background: #000;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 0.7rem;
         }
     </style>
 </head>
@@ -84,27 +119,69 @@
 
     <div style="text-align: center;">
         <h1 style="margin:0; font-size: 1.5rem;">TÍO GARNACHA</h1>
-        <small>Control de Ventas</small>
+        <medium>Control de Ventas</medium>
     </div>
 
-    <button class="btn-salir" onclick="window.location.href='index.html'">CERRAR SESIÓN</button>
+    <div style="display: flex; align-items: center; margin-right: 20px;">
+        <button class="btn-ayuda" id="btnAyuda" onclick="mostrarAyuda()">?</button>
+        <button class="btn-salir" onclick="window.location.href='index.html'">CERRAR SESIÓN</button>
+    </div>
 </div>
 
 <h2 style="margin-top:30px; text-transform: uppercase; text-align: center;">¿Qué deseas realizar?</h2>
 
 <div class="contenedor-botones">
-    <a href="Mesero.html" class="tarjeta-opcion">
+    <a href="Mesero.html" class="tarjeta-opcion" id="btnTomarPedido">
         <div class="icono">📝</div>
         <span>TOMAR PEDIDO</span>
+        <span class="tecla-atajo">F1</span>
     </a>
 
-    <a href="pedidos.html" class="tarjeta-opcion">
+    <a href="pedidos.html" class="tarjeta-opcion" id="btnVerPedidos">
         <div class="icono">📋</div>
         <span>VER PEDIDOS</span>
+        <span class="tecla-atajo">F2</span>
     </a>
 </div>
 
+<div class="info-local">
+    <strong>Visítanos:</strong><br>
+    Calle 26A, COLONIA CENTRO, <br>
+    Cancha de bazar, Motul, Yucatán <br><br>
+    <strong>Realiza tu pedido:</strong><br>
+    9911101664
+</div>
+
 <p style="margin-top: 60px; font-size: 12px; text-align: center;">v1.2 - Primera version</p>
+
+<script>
+    function mostrarAyuda() {
+        alert('Guía rápida: \n1. [F1] TOMAR PEDIDO para iniciar una venta. \n2. [F2] VER PEDIDOS para revisar el historial. \n3. [ESC] Cerrar sesión.');
+    }
+
+    // Lógica para detectar las teclas F1, F2, ?, y ESC
+    document.addEventListener('keydown', function(event) {
+        // Evitar que F1 abra la ayuda del navegador
+        if (event.key === "F1" || event.key === "F2") {
+            event.preventDefault();
+        }
+
+        switch(event.key) {
+            case "F1":
+                window.location.href = 'Mesero.html';
+                break;
+            case "F2":
+                window.location.href = 'pedidos.html';
+                break;
+            case "Escape":
+                window.location.href = 'index.html';
+                break;
+            case "?":
+                mostrarAyuda();
+                break;
+        }
+    });
+</script>
 
 </body>
 </html>

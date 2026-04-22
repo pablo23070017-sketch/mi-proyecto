@@ -35,8 +35,8 @@
         .logo-header {
             width: 180px;
             height: 80px;
-
             background-color: #fff;
+            margin-left: 20px;
         }
 
         .header-titulo { text-align: center; flex-grow: 1; }
@@ -49,9 +49,20 @@
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            margin-right: 20px;
             text-transform: uppercase;
             font-size: 0.8rem;
+        }
+
+        /* ESTILO BOTÓN DE AYUDA */
+        .btn-ayuda {
+            background-color: var(--blanco);
+            border: 2px solid var(--negro);
+            padding: 8px 12px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 15px;
+            font-size: 1rem;
         }
 
         h1 {
@@ -147,7 +158,10 @@
             <div style="font-size: 1.2rem; font-weight: bold;">TÍO GARNACHA</div>
             <small>REPORTES ESTRATÉGICOS</small>
         </div>
-        <button class="btn-regresar" onclick="volverAlPanel()">REGRESAR</button>
+        <div style="display: flex; align-items: center; margin-right: 20px;">
+            <button class="btn-ayuda" onclick="abrirAyuda()">?</button>
+            <button class="btn-regresar" onclick="volverAlPanel()">REGRESAR</button>
+        </div>
     </header>
 
     <h1>Generación de Reportes</h1>
@@ -180,6 +194,11 @@
     </div>
 
     <script>
+        // Función para mostrar ayuda sobre los reportes
+        function abrirAyuda() {
+            alert("GUÍA DE REPORTES: \n\n1. Selecciona una fecha de inicio en 'DESDE'.\n2. Selecciona una fecha de término en 'HASTA'.\n3. Presiona 'GENERAR TABLA' para ver el resumen de ventas en ese periodo.\n4. La tabla mostrará los pedidos realizados, el total y el método de pago usado.");
+        }
+
         // REDIRECCIÓN INTELIGENTE
         function volverAlPanel() {
             const sesion = JSON.parse(localStorage.getItem("sesion"));

@@ -40,7 +40,7 @@
             align-items: center;
         }
 
-        .boton-salir {
+        .boton-salir, .boton-ayuda {
             background-color: var(--verde);
             color: var(--negro);
             border: 2px solid var(--negro);
@@ -50,6 +50,13 @@
             cursor: pointer;
             text-decoration: none;
             font-size: 0.9rem;
+        }
+
+        .boton-ayuda {
+            background-color: var(--blanco);
+            margin-right: 10px;
+            font-size: 1.2rem;
+            padding: 5px 12px;
         }
 
         .panel-principal {
@@ -103,10 +110,11 @@
             padding: 15px;
             display: flex;
             justify-content: center;
+            gap: 10px;
         }
 
         .btn-confirmar {
-            width: 90%;
+            width: 80%;
             max-width: 400px;
             padding: 15px;
             font-size: 1.1rem;
@@ -145,6 +153,16 @@
             width: 100%;
             box-sizing: border-box;
         }
+
+        .btn-frecuente {
+            background-color: var(--blanco);
+            border: 2px solid var(--negro);
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
@@ -155,12 +173,22 @@
         <span>PERSONA: <span id="persona_label">1</span></span>
         <button class="boton-persona" style="padding: 5px 10px;" onclick="siguiente_persona()">+ PERSONA</button>
     </div>
-    <button class="boton-salir" onclick="volverAlPanel()">REGRESAR</button>
+    <div>
+        <button class="boton-ayuda" onclick="abrir_ayuda()">?</button>
+        <button class="boton-salir" onclick="volverAlPanel()">REGRESAR</button>
+    </div>
 </div>
 
 <div class="panel-principal">
     <div class="seccion-panel">
-        <h3 class="titulo-panel">🌮 ANTOJITOS</h3>
+        <h3 class="titulo-panel">⭐ CLIENTES FRECUENTES</h3>
+        <div class="cuerpo-panel" id="lista_frecuentes">
+            <button class="boton-accion" style="grid-column: span 2; background-color: var(--blanco) !important;" onclick="abrir_modal_frecuente()">+ REGISTRAR ACTUAL</button>
+        </div>
+    </div>
+
+    <div class="seccion-panel">
+        <h3 class="titulo-panel"> Taco ANTOJITOS</h3>
         <div class="cuerpo-panel">
             <button class="boton-accion" onclick="abrir_config('Panucho', 'pollo:22,huevo:22,molida:22,asado:25', 'Lechuga,Repollo,Tomate,Cebolla')">PANUCHO</button>
             <button class="boton-accion" onclick="abrir_config('Salbut', 'pollo:22,huevo:22,molida:22,asado:25', 'Lechuga,Repollo,Tomate,Cebolla')">SALBUT</button>
@@ -198,7 +226,32 @@
 </div>
 
 <div class="footer-acciones">
+    <button class="btn-confirmar" style="background-color: var(--blanco) !important; width: auto; padding: 15px 25px;" onclick="refrescar_pedido()">🔄 REFRESCAR</button>
     <button class="btn-confirmar" onclick="ver_nota()"> REVISAR PEDIDO</button>
+</div>
+
+<div id="modal_ayuda" class="modal">
+    <div class="modal-contenido">
+        <h2>❔ GUÍA DE USO</h2>
+        <p style="text-align: left; font-size: 0.9rem;">
+            1. <b>Mesa:</b> Cambia el número arriba a la izquierda.<br>
+            2. <b>Personas:</b> Usa '+ PERSONA' para separar cuentas.<br>
+            3. <b>Platillos:</b> Pulsa cualquier botón para elegir relleno e ingredientes.<br>
+            4. <b>Frecuentes:</b> Pulsa el nombre de un cliente para cargar su pedido usual.<br>
+            5. <b>Revisar:</b> Pulsa abajo para editar cantidades o enviar a cocina.
+        </p>
+        <button class="boton-accion" onclick="cerrar_modal_ayuda()">ENTENDIDO</button>
+    </div>
+</div>
+
+<div id="modal_frecuente" class="modal">
+    <div class="modal-contenido">
+        <h2>⭐ NUEVO FRECUENTE</h2>
+        <p>Se guardará el pedido actual como favorito.</p>
+        <input type="text" id="nombre_frecuente" placeholder="Nombre del Cliente">
+        <button class="boton-accion" style="width:100%; margin-top:10px;" onclick="guardar_frecuente()">GUARDAR CLIENTE</button>
+        <button onclick="cerrar_modal_f()" style="width:100%; margin-top:10px; background:none; border:none; text-decoration: underline; cursor:pointer;">Cancelar</button>
+    </div>
 </div>
 
 <div id="modal_nota" class="modal">
@@ -235,7 +288,6 @@
 </div>
 
 <script>
-    // FUNCIÓN AGREGADA PARA LA REDIRECCIÓN INTELIGENTE
     function volverAlPanel() {
         const sesion = JSON.parse(localStorage.getItem("sesion"));
         if (sesion && (sesion.usuario === "admin" || sesion.usuario === "administrador")) {
@@ -248,14 +300,72 @@
     var pedido_mesa = [];
     var persona_actual = 1;
     var prod_temp = "";
+    var cliente_actual_nombre = ""; // VARIABLE PARA GUARDAR NOMBRE DEL CLIENTE ACTUAL
+
+    // LÓGICA CLIENTES FRECUENTES
+    var clientes_frecuentes = JSON.parse(localStorage.getItem("frecuentes")) || [
+        { nombre: "Don Juan", pedido: [{persona: 1, nombre: "Panucho POLLO", precio: 22, cant: 2, nota: "Usual"}] }
+    ];
+
+    function cargar_frecuentes() {
+        const div = document.getElementById('lista_frecuentes');
+        div.innerHTML = "";
+        clientes_frecuentes.forEach((c, i) => {
+            div.innerHTML += `<button class="btn-frecuente" onclick="cargar_pedido_frecuente(${i})">👤 ${c.nombre}</button>`;
+        });
+        div.innerHTML += `<button class="boton-accion" style="grid-column: span 2; background-color: var(--blanco) !important;" onclick="abrir_modal_frecuente()">+ REGISTRAR ACTUAL</button>`;
+    }
+
+    function cargar_pedido_frecuente(index) {
+        cliente_actual_nombre = clientes_frecuentes[index].nombre; // ASIGNAR NOMBRE AL SELECCIONAR
+        const usual = clientes_frecuentes[index].pedido;
+        usual.forEach(item => {
+            pedido_mesa.push({...item, persona: persona_actual});
+        });
+        alert("Pedido de " + clientes_frecuentes[index].nombre + " cargado. ¡Puedes agregar más cosas!");
+        ver_nota();
+    }
+
+    function abrir_modal_frecuente() {
+        if(pedido_mesa.length === 0) return alert("Agrega algo al pedido primero para guardarlo.");
+        document.getElementById('modal_frecuente').style.display = "flex";
+    }
+
+    function guardar_frecuente() {
+        const nombre = document.getElementById('nombre_frecuente').value;
+        if(!nombre) return alert("Escribe un nombre.");
+        clientes_frecuentes.push({ nombre: nombre, pedido: [...pedido_mesa] });
+        localStorage.setItem("frecuentes", JSON.stringify(clientes_frecuentes));
+        cerrar_modal_f();
+        cargar_frecuentes();
+    }
+
+    // FUNCIÓN REFRESCAR PEDIDO
+    function refrescar_pedido() {
+        if(confirm("¿Estás seguro de reiniciar el pedido actual? Se borrará todo.")) {
+            pedido_mesa = [];
+            persona_actual = 1;
+            cliente_actual_nombre = ""; // RESETEAR NOMBRE
+            document.getElementById('persona_label').innerText = persona_actual;
+            alert("Pedido reiniciado.");
+        }
+    }
+
+    // AYUDA
+    function abrir_ayuda() { document.getElementById('modal_ayuda').style.display = "flex"; }
+    function cerrar_modal_ayuda() { document.getElementById('modal_ayuda').style.display = "none"; }
 
     function ver_nota() {
         var area = document.getElementById('contenido_nota');
         area.innerHTML = "";
-        var total = 0;
-        if(pedido_mesa.length === 0) {
-            area.innerHTML = "<p>No hay productos en el pedido.</p>";
+        
+        // MOSTRAR NOMBRE SI ES CLIENTE FRECUENTE
+        if(cliente_actual_nombre !== "") {
+            area.innerHTML += `<h3 style="color: var(--naranja); margin-bottom: 10px;">👤 CLIENTE: ${cliente_actual_nombre.toUpperCase()}</h3><hr>`;
         }
+
+        var total = 0;
+        if(pedido_mesa.length === 0) area.innerHTML += "<p>No hay productos en el pedido.</p>";
         pedido_mesa.forEach((p, i) => {
             var sub = p.precio * p.cant;
             total += sub;
@@ -311,7 +421,13 @@
     }
 
     function siguiente_persona() { persona_actual++; document.getElementById('persona_label').innerText = persona_actual; }
-    function mandar_cocina() { if(pedido_mesa.length > 0) { alert("¡PEDIDO ENVIADO A COCINA!"); location.reload(); } }
+    function mandar_cocina() { 
+        if(pedido_mesa.length > 0) { 
+            alert("¡PEDIDO ENVIADO A COCINA!"); 
+            cliente_actual_nombre = ""; // RESETEAR PARA SIGUIENTE TURNO
+            location.reload(); 
+        } 
+    }
     
     function abrir_config(n, t, i) {
         prod_temp = n;
@@ -348,6 +464,10 @@
     function cerrar_modal() { document.getElementById('modal_config').style.display = "none"; }
     function cerrar_modal_b() { document.getElementById('modal_bebida').style.display = "none"; }
     function cerrar_nota() { document.getElementById('modal_nota').style.display = "none"; }
+    function cerrar_modal_f() { document.getElementById('modal_frecuente').style.display = "none"; }
+
+    // Carga inicial
+    cargar_frecuentes();
 </script>
 </body>
 </html>

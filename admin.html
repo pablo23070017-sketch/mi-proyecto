@@ -10,6 +10,7 @@
             --naranja: #FF6666;
             --negro: #000000;
             --verde: #92e27a;
+            --blanco: #ffffff;
         }
 
         /* RESET Y FONDO */
@@ -39,8 +40,8 @@
         .logo-header {
             width: 180px;
             height: 80px;
-
             background-color: #fff;
+            margin-left: 20px;
         }
 
         .titulo-centro {
@@ -55,9 +56,20 @@
             border-radius: 10px;
             font-weight: bold;
             cursor: pointer;
-            margin-right: 20px;
             font-size: 0.8rem;
             text-transform: uppercase;
+        }
+
+        /* ESTILO BOTÓN DE AYUDA */
+        .btn-ayuda {
+            background-color: var(--blanco);
+            border: 2px solid var(--negro);
+            padding: 8px 12px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 15px;
+            font-size: 1rem;
         }
 
         h1 {
@@ -104,6 +116,32 @@
             margin-bottom: 10px;
         }
 
+        /* ETIQUETA DE ATAJO DE TECLADO */
+        .tecla-atajo {
+            margin-top: 10px;
+            background: var(--negro);
+            color: var(--blanco);
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 0.7rem;
+        }
+
+        /* CONTENEDOR INFO INFERIOR IZQUIERDA */
+        .info-local {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: var(--naranja);
+            border: 3px solid var(--negro);
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            box-shadow: 5px 5px 0px var(--negro);
+            text-align: left;
+            line-height: 1.4;
+            font-weight: bold;
+        }
+
         .version {
             margin-top: auto;
             padding: 20px;
@@ -119,10 +157,13 @@
 
         <div class="titulo-centro">
             <h2 style="margin:0; font-size: 1.4rem;">TÍO GARNACHA</h2>
-            <small>PANEL DE ADMINISTRACIÓN</small>
+            <medium>PANEL DE ADMINISTRACIÓN</medium>
         </div>
 
-        <button class="btn-salir" onclick="cerrarSesion()">Cerrar Sesión</button>
+        <div style="display: flex; align-items: center; margin-right: 20px;">
+            <button class="btn-ayuda" onclick="mostrarAyuda()">?</button>
+            <button class="btn-salir" onclick="cerrarSesion()">Cerrar Sesión</button>
+        </div>
     </header>
 
     <h1>¿QUÉ DESEA REALIZAR?</h1>
@@ -131,37 +172,71 @@
         <div class="tarjeta-admin" onclick="window.location.href='mesero.html'">
             <span class="icono">📝</span>
             <span>TOMAR PEDIDO</span>
+            <span class="tecla-atajo">F1</span>
         </div>
 
         <div class="tarjeta-admin" onclick="window.location.href='pedidos.html'">
             <span class="icono">📋</span>
             <span>VER PEDIDOS</span>
+            <span class="tecla-atajo">F2</span>
         </div>
 
         <div class="tarjeta-admin" onclick="window.location.href='gestionar_menu.html'">
-            <span class="icono">🍔</span>
+            <span class="icono">🍽️</span>
             <span>GESTIONAR MENÚ</span>
+            <span class="tecla-atajo">F3</span>
         </div>
 
         <div class="tarjeta-admin" onclick="window.location.href='generar_reporte.html'">
             <span class="icono">📊</span>
             <span>REPORTES</span>
+            <span class="tecla-atajo">F4</span>
         </div>
 
         <div class="tarjeta-admin" onclick="window.location.href='corte_caja.html'">
             <span class="icono">💰</span>
             <span>CORTE DE CAJA</span>
+            <span class="tecla-atajo">F5</span>
         </div>
+    </div>
+
+    <div class="info-local">
+        <strong>Visítanos:</strong><br>
+        Calle 26A, COLONIA CENTRO, <br>
+        Cancha de bazar, Motul, Yucatán <br><br>
+        <strong>Realiza tu pedido:</strong><br>
+        9911101664
     </div>
 
     <div class="version">v2.0 - Tío Garnacha System Admin</div>
 
     <script>
+        function mostrarAyuda() {
+            alert('Manual de Teclado (Admin): \n[F1] Tomar Pedido \n[F2] Ver Pedidos \n[F3] Gestionar Menú \n[F4] Generar Reportes \n[F5] Realizar Corte \n[ESC] Cerrar Sesión \n[?] Esta ayuda');
+        }
+
         function cerrarSesion() {
-            // Limpiamos la sesión para seguridad
             localStorage.removeItem("sesion");
             window.location.href = "index.html";
         }
+
+        // Lógica de Atajos de Teclado
+        document.addEventListener('keydown', function(event) {
+            // Detener funciones por defecto (como ayuda de Windows en F1 o refrescar en F5)
+            if (event.key >= "F1" && event.key <= "F5") {
+                event.preventDefault();
+            }
+
+            switch(event.key) {
+                case "F1": window.location.href = 'mesero.html'; break;
+                case "F2": window.location.href = 'pedidos.html'; break;
+                case "F3": window.location.href = 'gestionar_menu.html'; break;
+                case "F4": window.location.href = 'generar_reporte.html'; break;
+                case "F5": window.location.href = 'corte_caja.html'; break;
+                case "Escape": cerrarSesion(); break;
+                case "?": mostrarAyuda(); break;
+            }
+        });
     </script>
 
 </body>

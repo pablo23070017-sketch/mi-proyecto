@@ -21,7 +21,6 @@
             color: var(--negro);
         }
 
-        /* HEADER CON LOGO Y BOTÓN INTELIGENTE */
         header {
             width: 100%;
             background-color: var(--naranja);
@@ -35,8 +34,8 @@
         .logo-header {
             width: 180px;
             height: 80px;
-
             background-color: #fff;
+            margin-left: 20px;
         }
 
         .header-titulo {
@@ -44,7 +43,6 @@
             flex-grow: 1;
         }
 
-        /* TABLA ESTILO TÍO GARNACHA */
         h1 {
             text-align: center;
             text-transform: uppercase;
@@ -85,7 +83,6 @@
         tr:nth-child(even) { background-color: #fff4e6; }
         tr:hover { background-color: var(--amarillo); }
 
-        /* BOTÓN VERDE DE REGRESO */
         .back-btn {
             background-color: var(--verde);
             color: var(--negro);
@@ -95,7 +92,18 @@
             font-weight: bold;
             cursor: pointer;
             text-transform: uppercase;
-            margin-right: 20px;
+        }
+
+        /* ESTILO BOTÓN DE AYUDA */
+        .btn-ayuda {
+            background-color: var(--blanco);
+            border: 2px solid var(--negro);
+            padding: 8px 12px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 15px;
+            font-size: 1rem;
         }
     </style>
 </head>
@@ -107,7 +115,10 @@
             <div style="font-size: 1.2rem; font-weight: bold;">TÍO GARNACHA</div>
             <small id="rol-texto">HISTORIAL DE VENTAS</small>
         </div>
-        <button class="back-btn" onclick="volverAlPanel()">REGRESAR</button>
+        <div style="display: flex; align-items: center; margin-right: 20px;">
+            <button class="btn-ayuda" onclick="abrirAyuda()">?</button>
+            <button class="back-btn" onclick="volverAlPanel()">REGRESAR</button>
+        </div>
     </header>
 
     <h1>Registro de Pedidos</h1>
@@ -125,23 +136,26 @@
                 </tr>
             </thead>
             <tbody>
-                </tbody>
+            </tbody>
         </table>
     </div>
 
     <script>
-        // FUNCIÓN CLAVE: Detecta el rol y redirige al panel correcto
+        // Función para mostrar ayuda sobre el historial
+        function abrirAyuda() {
+            alert("AYUDA - HISTORIAL DE PEDIDOS:\n\n1. Aquí puedes ver todas las órdenes enviadas a cocina.\n2. El 'Total' se calcula automáticamente sumando los productos.\n3. Puedes verificar qué mesero tomó cada orden y a qué hora.");
+        }
+
         function volverAlPanel() {
             const sesion = JSON.parse(localStorage.getItem("sesion"));
             
             if (sesion && (sesion.usuario === "admin" || sesion.usuario === "administrador")) {
-                window.location.href = "admin.html"; // Panel del Admin
+                window.location.href = "admin.html";
             } else {
-                window.location.href = "panel.html"; // Panel del Mesero
+                window.location.href = "panel.html";
             }
         }
 
-        // Cargar los pedidos de la memoria
         let pedidos = JSON.parse(localStorage.getItem('pedidos_cocina')) || [];
         const tbody = document.querySelector("#pedidosTable tbody");
 
@@ -167,7 +181,6 @@
             });
         }
 
-        // Mostrar quién está viendo la página en el header
         const sesionActual = JSON.parse(localStorage.getItem("sesion"));
         if (sesionActual) {
             document.getElementById("rol-texto").innerText = "PANEL: " + sesionActual.usuario.toUpperCase();

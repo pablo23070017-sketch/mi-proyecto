@@ -34,8 +34,8 @@
         .logo-header {
             width: 180px;
             height: 80px;
-
             background-color: #fff;
+            margin-left: 20px;
         }
 
         .header-titulo { text-align: center; flex-grow: 1; }
@@ -48,9 +48,20 @@
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            margin-right: 20px;
             text-transform: uppercase;
             font-size: 0.8rem;
+        }
+
+        /* ESTILO BOTÓN DE AYUDA */
+        .btn-ayuda {
+            background-color: var(--blanco);
+            border: 2px solid var(--negro);
+            padding: 8px 12px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 15px;
+            font-size: 1rem;
         }
 
         /* CONTENEDOR PRINCIPAL */
@@ -141,7 +152,10 @@
         <h2 style="margin:0; font-size: 1.3rem;">TÍO GARNACHA</h2>
         <small>GESTIÓN DE DISPONIBILIDAD</small>
     </div>
-    <button class="btn-regresar" onclick="volverAlPanel()">REGRESAR</button>
+    <div style="display: flex; align-items: center; margin-right: 20px;">
+        <button class="btn-ayuda" onclick="abrirAyuda()">?</button>
+        <button class="btn-regresar" onclick="volverAlPanel()">REGRESAR</button>
+    </div>
 </header>
 
 <div class="contenedor-principal">
@@ -236,6 +250,11 @@
 </div>
 
 <script>
+    // Función para mostrar ayuda sobre inventario
+    function abrirAyuda() {
+        alert("AYUDA DE INVENTARIO: \n\n1. BLOQUEAR: Pulsa este botón si un producto se agotó; se pondrá en gris y los meseros no podrán pedirlo.\n2. DESBLOQUEAR: Pulsa de nuevo para activar el producto cuando haya existencia.\n3. AGREGAR: Opción para registrar nuevos platillos al menú.");
+    }
+
     // REDIRECCIÓN INTELIGENTE
     function volverAlPanel() {
         const sesion = JSON.parse(localStorage.getItem("sesion"));

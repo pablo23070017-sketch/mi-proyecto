@@ -35,8 +35,8 @@
         .logo-header {
             width: 180px;
             height: 80px;
-
             background-color: #fff;
+            margin-left: 20px;
         }
 
         .header-titulo { text-align: center; flex-grow: 1; }
@@ -49,9 +49,20 @@
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            margin-right: 20px;
             text-transform: uppercase;
             font-size: 0.8rem;
+        }
+
+        /* ESTILO BOTÓN DE AYUDA */
+        .btn-ayuda {
+            background-color: var(--blanco);
+            border: 2px solid var(--negro);
+            padding: 8px 12px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 15px;
+            font-size: 1rem;
         }
 
         h1 {
@@ -143,9 +154,12 @@
         <img src="imagenes/Log2.png" alt="Logo" class="logo-header">
         <div class="header-titulo">
             <div style="font-size: 1.2rem; font-weight: bold;">TÍO GARNACHA</div>
-            <small>GESTIÓN FINANCIERA</small>
+            <medium>GESTIÓN FINANCIERA</medium>
         </div>
-        <button class="btn-regresar" onclick="volverAlPanel()">REGRESAR</button>
+        <div style="display: flex; align-items: center; margin-right: 20px;">
+            <button class="btn-ayuda" onclick="abrirAyuda()">?</button>
+            <button class="btn-regresar" onclick="volverAlPanel()">REGRESAR</button>
+        </div>
     </header>
 
     <h1> Corte de Caja</h1>
@@ -183,6 +197,11 @@
     </div>
 
     <script>
+        // Función para mostrar ayuda sobre el corte de caja
+        function abrirAyuda() {
+            alert("AYUDA - CORTE DE CAJA: \n\n1. Selecciona la fecha de la que deseas obtener el cierre.\n2. Presiona 'GENERAR RESUMEN' para ver el total, pedidos y formas de pago.\n3. Puedes imprimir el resultado usando el botón 'IMPRIMIR CORTE' al final del resumen.");
+        }
+
         // REDIRECCIÓN INTELIGENTE
         function volverAlPanel() {
             const sesion = JSON.parse(localStorage.getItem("sesion"));
@@ -200,7 +219,6 @@
                 return;
             }
 
-            // Datos simulados (Igual que los tenías)
             const cortes = {
                 '2026-03-15': {total: 300, pedidos: 12, efectivo: 180, tarjeta: 120},
                 '2026-03-16': {total: 450, pedidos: 20, efectivo: 250, tarjeta: 200},
