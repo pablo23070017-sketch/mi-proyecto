@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tío Garnacha - Pedidos</title>
+    <style>
+        :root {
+            --amarillo: #EBD34E;
+            --naranja: #FF6666; 
+            --negro: #000000;   
+            --verde: #92e27a;   
+            --blanco: #ffffff;
+        }
+
+        body { 
+            background-color: var(--amarillo); 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            color: var(--negro);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .barra-superior { 
+            background-color: var(--naranja); 
+            padding: 10px 20px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--negro);
+        }
+
+        .info-mesa {
+            display: flex;
+            gap: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            align-items: center;
+        }
+
+        .boton-salir, .boton-ayuda {
+            background-color: var(--verde);
+            color: var(--negro);
+            border: 2px solid var(--negro);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .boton-ayuda {
+            background-color: var(--blanco);
+            margin-right: 10px;
+            font-size: 1.2rem;
+            padding: 5px 12px;
+        }
+
+        .panel-principal {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .seccion-panel {
+            background: var(--naranja);
+            border: 3px solid var(--negro);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 6px 6px 0px var(--negro);
+            height: fit-content;
+        }
+
+        .titulo-panel {
+            background-color: var(--negro);
+            color: var(--amarillo);
+            padding: 10px;
+            margin: 0;
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 1rem;
+        }
+
+        .cuerpo-panel {
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .boton-accion, .boton-persona, .btn-confirmar {
+            background-color: var(--verde) !important;
+            color: var(--negro) !important;
+            border: 2px solid var(--negro);
+            border-radius: 8px;
+            padding: 12px 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .footer-acciones {
+            background: var(--negro);
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-confirmar {
+            width: 80%;
+            max-width: 400px;
+            padding: 15px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            border: 3px solid var(--amarillo);
+        }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 200; }
+        
+        .modal-contenido { 
+            background-color: var(--amarillo); 
+            border: 5px solid var(--naranja); 
+            color: var(--negro);
+            border-radius: 20px;
+            padding: 20px;
+            width: 90%;
+            max-width: 450px;
+            text-align: center; 
+        }
+
+        .item-revision {
+            background: white;
+            border: 2px solid var(--negro);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        select, input, textarea { 
+            background: white;
+            border: 2px solid var(--negro);
+            color: var(--negro);
+            font-weight: bold;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn-frecuente {
+            background-color: var(--blanco);
+            border: 2px solid var(--negro);
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<div class="barra-superior">
+    <div class="info-mesa">
+        <span>MESA: <input type="number" id="mesa_num" value="1" style="width: 45px;"></span>
+        <span>PERSONA: <span id="persona_label">1</span></span>
+        <button class="boton-persona" style="padding: 5px 10px;" onclick="siguiente_persona()">+ PERSONA</button>
+    </div>
+    <div>
+        <button class="boton-ayuda" onclick="abrir_ayuda()">?</button>
+        <button class="boton-salir" onclick="volverAlPanel()">REGRESAR</button>
+    </div>
+</div>
+
+<div class="panel-principal">
+    <div class="seccion-panel">
+        <h3 class="titulo-panel">⭐ CLIENTES FRECUENTES</h3>
+        <div class="cuerpo-panel" id="lista_frecuentes">
+            <button class="boton-accion" style="grid-column: span 2; background-color: var(--blanco) !important;" onclick="abrir_modal_frecuente()">+ REGISTRAR ACTUAL</button>
+        </div>
+    </div>
+
+    <div class="seccion-panel">
+        <h3 class="titulo-panel"> Taco ANTOJITOS</h3>
+        <div class="cuerpo-panel">
+            <button class="boton-accion" onclick="validar_disponibilidad('PANUCHOS', 'Panucho', 'pollo:22,huevo:22,molida:22,asado:25', 'Lechuga,Repollo,Tomate,Cebolla')">PANUCHO</button>
+            <button class="boton-accion" onclick="validar_disponibilidad('SALBUTES', 'Salbut', 'pollo:22,huevo:22,molida:22,asado:25', 'Lechuga,Repollo,Tomate,Cebolla')">SALBUT</button>
+            <button class="boton-accion" onclick="validar_disponibilidad('GARNACHAS', 'Garnacha', 'huevo:22,pollo:22,molida:22,asado:25', 'Lechuga,Repollo,Frijol,Tomate,Cebolla Roja')" style="grid-column: span 2;">GARNACHA</button>
+        </div>
+    </div>
+
+    <div class="seccion-panel">
+        <h3 class="titulo-panel">🌯 SOPES Y TACOS</h3>
+        <div class="cuerpo-panel">
+            <button class="boton-accion" onclick="validar_disponibilidad('SOPES', 'Sope', 'asado:28,pollo:28,molida:28,huevo:28', 'Frijol,Crema,Salsa Verde,Tomate Asado,Romanita,Cebolla Roja')">SOPE</button>
+            <button class="boton-accion" onclick="validar_disponibilidad('TACOS', 'Taco', 'asado:25,pollo:25', 'Tortilla,Frijol,Repollo,Tomate Asado,Cebolla Roja')">TACO</button>
+            <button class="boton-accion" onclick="validar_disponibilidad('POLCANES', 'Polcan', 'normal:12,pollo:20,asado:20,molida:20', 'Repollo,Cebolla,Tomate Frito,Tomate Asado,Cebolla Roja')">POLCAN</button>
+            <button class="boton-accion" onclick="validar_disponibilidad('EMPANADAS', 'Empanada', 'molida:15,queso:15,pollo:15', 'Repollo,Cebolla,Tomate Frito')">EMPANADA</button>
+        </div>
+    </div>
+
+    <div class="seccion-panel">
+        <h3 class="titulo-panel">🍜 SOPAS Y TORTAS</h3>
+        <div class="cuerpo-panel">
+            <button class="boton-accion" onclick="validar_disponibilidad('SOPA SENCILLA', 'Sopa Sencilla', 'entera:40,media:25', 'Repollo,Cebolla,Tomate Frito')">SOPA SENCILLA</button>
+            <button class="boton-accion" onclick="validar_disponibilidad('SOPA ESPECIAL', 'Sopa Especial', 'entera:65,media:35', 'Pollo,Huevo,Repollo,Cebolla,Tomate Frito')">SOPA ESPECIAL</button>
+            <button class="boton-accion" onclick="validar_disponibilidad('TORTA', 'Torta', 'ent. asado:70,ent. molida:70,ent. pollo:65,1/2 asado:40,1/2 molida:40,1/2 pollo:35', 'Frijol,Mayonesa,Repollo,Tomate Asado,Lechuga')" style="grid-column: span 2;">TORTA</button>
+        </div>
+    </div>
+
+    <div class="seccion-panel">
+        <h3 class="titulo-panel">🥤 BEBIDAS</h3>
+        <div class="cuerpo-panel">
+            <button class="boton-accion" onclick="validar_bebida('REFRESCOS', 'Refresco', 25, 'Coca-Cola,Negra,Fresa,Fanta,Mundet,Del Valle', 'Vidrio,Desechable')">REFRESCO</button>
+            <button class="boton-accion" onclick="validar_bebida('NATURALES', 'Natural', 20, 'Jamaica,Horchata', 'Vaso')">AGUA NATURAL</button>
+            <button class="boton-accion" onclick="validar_bebida('DESECHABLES', 'Desechable', 25, 'Fuze Tea,Agua 1L:22,Agua Chi:18', 'Bote')" style="grid-column: span 2;">OTRAS BEBIDAS</button>
+        </div>
+    </div>
+</div>
+
+<div class="footer-acciones">
+    <button class="btn-confirmar" style="background-color: var(--blanco) !important; width: auto; padding: 15px 25px;" onclick="refrescar_pedido()">🔄 REFRESCAR</button>
+    <button class="btn-confirmar" onclick="ver_nota()"> REVISAR PEDIDO</button>
+</div>
+
+<div id="modal_ayuda" class="modal">
+    <div class="modal-contenido">
+        <h2>❔ GUÍA DE USO</h2>
+        <p style="text-align: left; font-size: 0.9rem;">
+            1. <b>Mesa:</b> Cambia el número arriba a la izquierda.<br>
+            2. <b>Personas:</b> Usa '+ PERSONA' para separar cuentas.<br>
+            3. <b>Platillos:</b> Pulsa cualquier botón para elegir relleno e ingredientes.<br>
+            4. <b>Frecuentes:</b> Pulsa el nombre de un cliente para cargar su pedido usual.<br>
+            5. <b>Revisar:</b> Pulsa abajo para editar cantidades o enviar a cocina.
+        </p>
+        <button class="boton-accion" onclick="cerrar_modal_ayuda()">ENTENDIDO</button>
+    </div>
+</div>
+
+<div id="modal_frecuente" class="modal">
+    <div class="modal-contenido">
+        <h2>⭐ NUEVO FRECUENTE</h2>
+        <p>Se guardará el pedido actual como favorito.</p>
+        <input type="text" id="nombre_frecuente" placeholder="Nombre del Cliente">
+        <button class="boton-accion" style="width:100%; margin-top:10px;" onclick="guardar_frecuente()">GUARDAR CLIENTE</button>
+        <button onclick="cerrar_modal_f()" style="width:100%; margin-top:10px; background:none; border:none; text-decoration: underline; cursor:pointer;">Cancelar</button>
+    </div>
+</div>
+
+<div id="modal_nota" class="modal">
+    <div class="modal-contenido">
+        <h2 style="margin-top:0;"> RESUMEN DE ORDEN</h2>
+        <div id="contenido_nota" style="max-height: 50vh; overflow-y: auto; margin-bottom: 15px;"></div>
+        <button class="boton-accion" style="width: 100%; padding: 15px;" onclick="mandar_cocina()"> ENVIAR A COCINA</button>
+        <button onclick="cerrar_nota()" style="width: 100%; margin-top: 10px; background:none; border:none; cursor:pointer; text-decoration: underline;">VOLVER AL MENU</button>
+    </div>
+</div>
+
+<div id="modal_config" class="modal">
+    <div class="modal-contenido">
+        <h2 id="conf_nombre">CONFIGURAR</h2>
+        <label>RELLENO:</label>
+        <select id="conf_tipo"></select>
+        <label>CANTIDAD:</label>
+        <input type="number" id="conf_cant" value="1" min="1">
+        <div id="conf_ingredientes" style="text-align: left; padding: 10px;"></div>
+        <textarea id="conf_nota" placeholder="Notas..."></textarea>
+        <button class="boton-accion" style="width:100%" onclick="guardar_comida()">AGREGAR AL PEDIDO</button>
+        <button onclick="cerrar_modal()" style="width:100%; margin-top:10px; background:none; border:none;">CANCELAR</button>
+    </div>
+</div>
+
+<div id="modal_bebida" class="modal">
+    <div class="modal-contenido">
+        <h2>BEBIDA</h2>
+        <select id="beb_sabor"></select>
+        <select id="beb_envase"></select>
+        <button class="boton-accion" style="width:100%" onclick="guardar_bebida()">AGREGAR BEBIDA</button>
+        <button onclick="cerrar_modal_b()" style="width:100%; margin-top:10px; background:none; border:none;">CANCELAR</button>
+    </div>
+</div>
+
+<script>
+    const API_BASE = 'http://10.243.206.196:3000';
+
+    function volverAlPanel() {
+        const sesion = JSON.parse(localStorage.getItem("sesion"));
+        if (sesion && (sesion.rol === "admin")) {
+            window.location.href = "admin.html";
+        } else {
+            window.location.href = "panel.html";
+        }
+    }
+
+    var pedido_mesa = [];
+    var persona_actual = 1;
+    var prod_temp = "";
+    var cliente_actual_nombre = ""; 
+
+    var clientes_frecuentes = JSON.parse(localStorage.getItem("frecuentes")) || [
+        { nombre: "Don Juan", pedido: [{persona: 1, nombre: "Panucho POLLO", precio: 22, cant: 2, nota: "Usual"}] }
+    ];
+
+    async function validar_disponibilidad(nombreBD, n, t, i) {
+        try {
+            const res = await fetch(`${API_BASE}/productos-gestion`);
+            const productos = await res.json();
+            const prod = productos.find(p => p.nombre.toUpperCase().trim() === nombreBD.toUpperCase().trim());
+
+            if (prod && prod.disponible === 0) {
+                alert("⚠️ PRODUCTO AGOTADO: El administrador ha bloqueado este producto.");
+            } else {
+                abrir_config(n, t, i);
+            }
+        } catch (e) {
+            abrir_config(n, t, i); 
+        }
+    }
+
+    async function validar_bebida(nombreBD, n, p, s, e) {
+        try {
+            const res = await fetch(`${API_BASE}/productos-gestion`);
+            const productos = await res.json();
+            const prod = productos.find(p => p.nombre.toUpperCase().trim() === nombreBD.toUpperCase().trim());
+
+            if (prod && prod.disponible === 0) {
+                alert("⚠️ BEBIDA AGOTADA: No hay existencia por el momento.");
+            } else {
+                abrir_bebida(n, p, s, e);
+            }
+        } catch (err) {
+            abrir_bebida(n, p, s, e);
+        }
+    }
+
+    function cargar_frecuentes() {
+        const div = document.getElementById('lista_frecuentes');
+        div.innerHTML = "";
+        clientes_frecuentes.forEach((c, i) => {
+            div.innerHTML += `<button class="btn-frecuente" onclick="cargar_pedido_frecuente(${i})">👤 ${c.nombre}</button>`;
+        });
+        div.innerHTML += `<button class="boton-accion" style="grid-column: span 2; background-color: var(--blanco) !important;" onclick="abrir_modal_frecuente()">+ REGISTRAR ACTUAL</button>`;
+    }
+
+    function cargar_pedido_frecuente(index) {
+        cliente_actual_nombre = clientes_frecuentes[index].nombre; 
+        const usual = clientes_frecuentes[index].pedido;
+        usual.forEach(item => {
+            pedido_mesa.push({...item, persona: persona_actual});
+        });
+        alert("Pedido de " + clientes_frecuentes[index].nombre + " cargado.");
+        ver_nota();
+    }
+
+    function abrir_modal_frecuente() {
+        if(pedido_mesa.length === 0) return alert("Agrega algo al pedido primero.");
+        document.getElementById('modal_frecuente').style.display = "flex";
+    }
+
+    function guardar_frecuente() {
+        const nombre = document.getElementById('nombre_frecuente').value;
+        if(!nombre) return alert("Escribe un nombre.");
+        clientes_frecuentes.push({ nombre: nombre, pedido: [...pedido_mesa] });
+        localStorage.setItem("frecuentes", JSON.stringify(clientes_frecuentes));
+        cerrar_modal_f();
+        cargar_frecuentes();
+    }
+
+    function refrescar_pedido() {
+        if(confirm("¿Reiniciar pedido?")) {
+            pedido_mesa = [];
+            persona_actual = 1;
+            document.getElementById('persona_label').innerText = persona_actual;
+            alert("Borrado.");
+        }
+    }
+
+    function abrir_ayuda() { document.getElementById('modal_ayuda').style.display = "flex"; }
+    function cerrar_modal_ayuda() { document.getElementById('modal_ayuda').style.display = "none"; }
+
+    function ver_nota() {
+        var area = document.getElementById('contenido_nota');
+        area.innerHTML = "";
+        if(cliente_actual_nombre) area.innerHTML += `<h3>👤 ${cliente_actual_nombre}</h3><hr>`;
+        var total = 0;
+        pedido_mesa.forEach((p, i) => {
+            var sub = p.precio * p.cant;
+            total += sub;
+            area.innerHTML += `
+                <div class="item-revision">
+                    <b>P${p.persona}:</b> ${p.cant}x ${p.nombre} ($${sub})
+                    <div>
+                        <button class="boton-accion" style="padding:5px; width:40px;" onclick="sumar_uno(${i})">+</button>
+                        <button class="boton-accion" style="padding:5px; width:40px; background:#ff4444!important;" onclick="quitar(${i})">X</button>
+                    </div>
+                </div>`;
+        });
+        area.innerHTML += `<h3>TOTAL: $${total}</h3>`;
+        document.getElementById('modal_nota').style.display = "flex";
+    }
+
+    function sumar_uno(index) { pedido_mesa[index].cant += 1; ver_nota(); }
+    function quitar(index) { pedido_mesa.splice(index, 1); ver_nota(); }
+
+    function guardar_comida() {
+        var s = document.getElementById('conf_tipo');
+        var q = [];
+        document.querySelectorAll('.ch_i:checked').forEach(c => q.push(c.value));
+        pedido_mesa.push({
+            persona: persona_actual,
+            nombre: prod_temp + " " + s.options[s.selectedIndex].text,
+            precio: parseFloat(s.value),
+            cant: parseInt(document.getElementById('conf_cant').value),
+            nota: (q.length > 0 ? "Sin: "+q.join(",") : "") + " " + document.getElementById('conf_nota').value
+        });
+        cerrar_modal();
+    }
+
+    function guardar_bebida() {
+        var s = document.getElementById('beb_sabor');
+        var e = document.getElementById('beb_envase');
+        pedido_mesa.push({
+            persona: persona_actual,
+            nombre: s.options[s.selectedIndex].text + " (" + e.value + ")",
+            precio: parseFloat(s.value),
+            cant: 1,
+            nota: "Fría"
+        });
+        cerrar_modal_b();
+    }
+
+    function siguiente_persona() { persona_actual++; document.getElementById('persona_label').innerText = persona_actual; }
+
+    async function mandar_cocina() { 
+        if(pedido_mesa.length === 0) return alert("Vacio.");
+        const numMesa = document.getElementById('mesa_num').value;
+        const sesion = JSON.parse(localStorage.getItem("sesion"));
+        const id_u = sesion ? sesion.id_usuario : 1;
+
+        try {
+            const res = await fetch(`${API_BASE}/pedidos`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ mesa: numMesa, items: pedido_mesa, id_usuario: id_u })
+            });
+            if(res.ok) {
+                alert("🚀 ENVIADO CON ÉXITO!"); 
+                location.reload(); 
+            } else {
+                alert("Error en el servidor al procesar el pedido.");
+            }
+        } catch (error) { 
+            alert("Error de conexión con la PC. Revisa que el servidor esté ON."); 
+        }
+    }
+    
+    function abrir_config(n, t, i) {
+        prod_temp = n;
+        document.getElementById('conf_nombre').innerText = n;
+        document.getElementById('conf_cant').value = 1;
+        var sel = document.getElementById('conf_tipo');
+        sel.innerHTML = "";
+        t.split(",").forEach(x => {
+            var d = x.split(":");
+            sel.innerHTML += `<option value="${d[1]}">${d[0].toUpperCase()} ($${d[1]})</option>`;
+        });
+        var div_i = document.getElementById('conf_ingredientes');
+        div_i.innerHTML = "";
+        i.split(",").forEach(x => {
+            div_i.innerHTML += `<label style="display:block;"><input type="checkbox" class="ch_i" value="${x}"> SIN ${x}</label>`;
+        });
+        document.getElementById('modal_config').style.display = "flex";
+    }
+
+    function abrir_bebida(n, p, s, e) {
+        prod_temp = n;
+        var s_sel = document.getElementById('beb_sabor');
+        s_sel.innerHTML = "";
+        s.split(",").forEach(x => {
+            var d = x.split(":");
+            s_sel.innerHTML += `<option value="${d[1] || p}">${d[0]}</option>`;
+        });
+        var e_sel = document.getElementById('beb_envase');
+        e_sel.innerHTML = "";
+        e.split(",").forEach(x => { e_sel.innerHTML += `<option value="${x}">${x}</option>`; });
+        document.getElementById('modal_bebida').style.display = "flex";
+    }
+    
+    function cerrar_modal() { document.getElementById('modal_config').style.display = "none"; }
+    function cerrar_modal_b() { document.getElementById('modal_bebida').style.display = "none"; }
+    function cerrar_nota() { document.getElementById('modal_nota').style.display = "none"; }
+    function cerrar_modal_f() { document.getElementById('modal_frecuente').style.display = "none"; }
+
+    cargar_frecuentes();
+</script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tío Garnacha - Login</title>
+    <link rel="stylesheet" href="Style.css">
+    <style>
+        body {
+            background-image: url('imagenes/Log.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            background-color: #facc15; 
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            background-color: rgba(250, 204, 21, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            border: 4px solid #ea580c;
+            box-shadow: 10px 10px 0px #000;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        .admin-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #000;
+        }
+
+        .btn-admin {
+            background-color: #16a34a !important;
+            color: #0e0e0d !important;
+            margin-top: 8px;
+            border: 2px solid #000;
+            border-radius: 8px;
+            padding: 10px;
+            width: 100%;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        h1, h2 {
+            margin: 10px 0;
+            color: #000;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #000;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        #loginBtn, #crearBtn {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0;
+            border: 2px solid #000;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #loginBtn { background-color: #16a34a; color: #000; }
+        #crearBtn { background-color: #ea580c; color: #000; }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <h1>Tío Garnacha</h1>
+        <h2>Inicio de Sesión</h2>
+
+        <input type="text" placeholder="ID Usuario">
+        <input type="text" placeholder="Nombre (Usuario)">
+        <input type="email" placeholder="Correo Electrónico">
+        <input type="password" placeholder="Contraseña">
+
+        <button id="loginBtn">Iniciar Sesión</button>
+        <button id="crearBtn">Crear cuenta (Mesero)</button>
+
+        <div class="admin-section">
+            <button id="loginAdminBtn" class="btn-admin">Entrar como Admin</button>
+            <button id="crearAdminBtn" class="btn-admin">Registrar Admin</button>
+        </div>
+    </div>
+
+    <script>
+        const loginBtn = document.getElementById("loginBtn");
+        const crearBtn = document.getElementById("crearBtn");
+        const loginAdminBtn = document.getElementById("loginAdminBtn");
+        const crearAdminBtn = document.getElementById("crearAdminBtn");
+
+        const obtenerDatos = () => {
+            const inputs = document.querySelectorAll("input");
+            return {
+                id: inputs[0].value,
+                usuario: inputs[1].value,
+                correo: inputs[2].value,
+                password: inputs[3].value
+            };
+        };
+
+        // --- FUNCIÓN MAESTRA DE LOGIN (CONECTADA A MYSQL) ---
+        async function realizarLogin(rolEsperado) {
+            const { usuario, password } = obtenerDatos();
+
+            try {
+                const res = await fetch('http://10.243.206.196:3000/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user: usuario, pass: password })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    if (data.usuario.rol === rolEsperado) {
+                        localStorage.setItem("sesion", JSON.stringify(data.usuario));
+                        alert(`¡Bienvenido! Entrando como ${rolEsperado}...`);
+                        window.location.href = (rolEsperado === 'admin') ? "admin.html" : "Mesero.html";
+                    } else {
+                        alert(`Este usuario no tiene permisos de ${rolEsperado}`);
+                    }
+                } else {
+                    alert("Datos incorrectos");
+                }
+            } catch (error) {
+                alert("Error de conexión con el servidor");
+            }
+        }
+
+        // --- FUNCIÓN MAESTRA DE REGISTRO (CONECTADA A MYSQL) ---
+        async function registrarUsuario(rol) {
+            const { id, usuario, password } = obtenerDatos();
+            if(!id || !usuario || !password) return alert("Completa los campos principales.");
+
+            try {
+                const res = await fetch('http://10.243.206.196:3000/registrar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, usuario, password, rol, nombre: usuario })
+                });
+
+                if(res.ok) alert(`Cuenta de ${rol} creada en la base de datos.`);
+                else alert("Error al registrar.");
+            } catch (error) {
+                alert("Error de conexión.");
+            }
+        }
+
+        // --- ASIGNACIÓN DE CLICKS ---
+        loginBtn.addEventListener("click", () => realizarLogin('mesero'));
+        loginAdminBtn.addEventListener("click", () => realizarLogin('admin'));
+        
+        crearBtn.addEventListener("click", () => registrarUsuario('mesero'));
+        crearAdminBtn.addEventListener("click", () => registrarUsuario('admin'));
+
+    </script>
+</body>
+</html>

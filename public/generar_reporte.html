@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generar Reporte - Tío Garnacha</title>
+    <style>
+        :root {
+            --amarillo: #EBD34E;
+            --naranja: #FF6666;
+            --negro: #000000;
+            --verde: #92e27a;
+            --blanco: #ffffff;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--amarillo);
+            margin: 0;
+            padding: 0;
+            color: var(--negro);
+        }
+
+        /* HEADER COHERENTE */
+        header {
+            width: 100%;
+            background-color: var(--naranja);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--negro);
+        }
+
+        .logo-header {
+            width: 180px;
+            height: 80px;
+            background-color: #fff;
+            margin-left: 20px;
+        }
+
+        .header-titulo { text-align: center; flex-grow: 1; }
+
+        .btn-regresar {
+            background-color: var(--verde);
+            color: var(--negro);
+            border: 2px solid var(--negro);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        /* ESTILO BOTÓN DE AYUDA */
+        .btn-ayuda {
+            background-color: var(--blanco);
+            border: 2px solid var(--negro);
+            padding: 8px 12px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 15px;
+            font-size: 1rem;
+        }
+
+        h1 {
+            text-align: center;
+            text-transform: uppercase;
+            margin: 30px 0;
+        }
+
+        /* FORMULARIO NARANJA */
+        .contenedor-reporte {
+            background-color: var(--naranja);
+            border: 3px solid var(--negro);
+            border-radius: 15px;
+            padding: 25px;
+            width: 90%;
+            max-width: 600px;
+            margin: 0 auto 30px auto;
+            box-shadow: 7px 7px 0px var(--negro);
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .contenedor-reporte label {
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        input[type="date"] {
+            padding: 10px;
+            border: 2px solid var(--negro);
+            border-radius: 8px;
+            font-weight: bold;
+            background-color: white;
+        }
+
+        .btn-generar {
+            background-color: var(--verde);
+            color: var(--negro);
+            border: 2px solid var(--negro);
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            align-self: flex-end;
+        }
+
+        /* TABLA DE RESULTADOS */
+        .table-container {
+            width: 95%;
+            max-width: 1000px;
+            margin: 0 auto 50px auto;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--blanco);
+            border: 3px solid var(--negro);
+            box-shadow: 10px 10px 0px var(--negro);
+        }
+
+        th {
+            background-color: var(--naranja);
+            color: var(--negro);
+            padding: 15px;
+            text-align: left;
+            border-bottom: 4px solid var(--negro);
+            border-right: 2px solid var(--negro);
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 12px;
+            border: 2px solid var(--negro);
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) { background-color: #fff4e6; }
+        tr:hover { background-color: var(--amarillo); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <img src="imagenes/Log2.png" alt="Logo" class="logo-header">
+        <div class="header-titulo">
+            <div style="font-size: 1.2rem; font-weight: bold;">TÍO GARNACHA</div>
+            <small>REPORTES ESTRATÉGICOS</small>
+        </div>
+        <div style="display: flex; align-items: center; margin-right: 20px;">
+            <button class="btn-ayuda" onclick="abrirAyuda()">?</button>
+            <button class="btn-regresar" onclick="volverAlPanel()">REGRESAR</button>
+        </div>
+    </header>
+
+    <h1>Generación de Reportes</h1>
+
+    <div class="contenedor-reporte">
+        <label>
+            DESDE:
+            <input type="date" id="fechaInicio">
+        </label>
+        <label>
+            HASTA:
+            <input type="date" id="fechaFin">
+        </label>
+        <button class="btn-generar" onclick="generarReporte()">GENERAR TABLA</button>
+    </div>
+
+    <div class="table-container">
+        <table id="tablaReporte">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Pedido Detalle</th>
+                    <th>Total Recaudado</th>
+                    <th>Método Pago</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        function abrirAyuda() {
+            alert("GUÍA DE REPORTES: \n\n1. Selecciona una fecha de inicio en 'DESDE'.\n2. Selecciona una fecha de término en 'HASTA'.\n3. Presiona 'GENERAR TABLA' para ver el resumen de ventas en ese periodo.\n4. La tabla mostrará los pedidos realizados, el total y el método de pago usado.");
+        }
+
+        function volverAlPanel() {
+            window.location.href = "admin.html";
+        }
+
+        async function generarReporte() {
+            const tbody = document.querySelector('#tablaReporte tbody');
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Cargando datos...</td></tr>'; 
+
+            const inicio = document.getElementById('fechaInicio').value;
+            const fin = document.getElementById('fechaFin').value;
+
+            if(!inicio || !fin) {
+                alert('Debes seleccionar ambas fechas para el reporte');
+                tbody.innerHTML = '';
+                return;
+            }
+
+            try {
+                // IP actualizada a 10.243.206.196
+                const response = await fetch('http://10.243.206.196:3000/pedidos');
+                
+                if (!response.ok) throw new Error("Error en la respuesta del servidor");
+                
+                const pedidos = await response.json();
+
+                // Filtrado con validación de seguridad para fechas
+                const reporte = pedidos.filter(p => {
+                    if (!p.fecha) return false;
+                    // Extraemos solo la parte YYYY-MM-DD para comparar con el input date
+                    const fechaPedido = p.fecha.includes('T') ? p.fecha.split('T')[0] : p.fecha.substring(0, 10);
+                    return fechaPedido >= inicio && fechaPedido <= fin;
+                });
+
+                tbody.innerHTML = ''; 
+
+                if(reporte.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">No hay ventas registradas en este rango</td></tr>';
+                    return;
+                }
+
+                reporte.forEach(p => {
+                    const fila = document.createElement('tr');
+                    const fechaLimpia = p.fecha.includes('T') ? p.fecha.split('T')[0] : p.fecha.substring(0, 10);
+                    const totalNumerico = parseFloat(p.total_cuenta) || 0;
+                    
+                    fila.innerHTML = `
+                        <td>${fechaLimpia}</td>
+                        <td>${p.productos || 'Sin detalle'}</td>
+                        <td style="color:var(--verde)">$${totalNumerico.toFixed(2)}</td>
+                        <td>Efectivo (Simulado)</td>
+                    `;
+                    tbody.appendChild(fila);
+                });
+
+            } catch (error) {
+                console.error("Error al generar reporte:", error);
+                alert("Error al conectar con el servidor 10.243.206.196. Verifica que app.js esté corriendo.");
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Error de conexión</td></tr>';
+            }
+        }
+    </script>
+</body>
+</html>
