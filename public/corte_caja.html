@@ -215,8 +215,8 @@
             }
 
             try {
-                // ACTUALIZACIÓN DE IP A 10.243.206.196
-                const response = await fetch(`http://10.243.206.196:3000/corte-caja/${fecha}`);
+                // ACTUALIZACIÓN DE IP A 10.23.231.196
+                const response = await fetch(`http://10.23.231.196:3000/corte-caja/${fecha}`);
                 
                 if (!response.ok) throw new Error("Error en servidor");
                 
@@ -239,7 +239,7 @@
 
             } catch (error) {
                 console.error("Error en corte:", error);
-                alert("Error al conectar con el servidor (10.243.206.196). Verifica que app.js esté encendido.");
+                alert("Error al conectar con el servidor (10.23.231.196). Verifica que app.js esté encendido.");
             }
         }
     </script>

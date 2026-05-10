@@ -118,7 +118,7 @@
             const { usuario, password } = obtenerDatos();
 
             try {
-                const res = await fetch('http://10.243.206.196:3000/login', {
+                const res = await fetch('http://10.23.231.196:3000/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ user: usuario, pass: password })
@@ -148,7 +148,7 @@
             if(!id || !usuario || !password) return alert("Completa los campos principales.");
 
             try {
-                const res = await fetch('http://10.243.206.196:3000/registrar', {
+                const res = await fetch('http://10.23.231.196:3000/registrar', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id, usuario, password, rol, nombre: usuario })

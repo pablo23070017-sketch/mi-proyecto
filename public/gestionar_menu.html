@@ -308,7 +308,7 @@
     // Sincronizar estados al cargar la página
     async function sincronizarEstados() {
         try {
-            const res = await fetch('http://192.168.1.49:3000/productos-gestion');
+            const res = await fetch('http://192.168.1.49:3000/gestionar_menu');
             const productos = await res.json();
             
             const tarjetas = document.querySelectorAll('.item-menu');

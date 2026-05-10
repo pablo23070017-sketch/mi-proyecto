@@ -216,8 +216,8 @@
             }
 
             try {
-                // IP actualizada a 10.243.206.196
-                const response = await fetch('http://10.243.206.196:3000/pedidos');
+                // IP actualizada a 10.23.231.196
+                const response = await fetch('http://10.23.231.196:3000/pedidos');
                 
                 if (!response.ok) throw new Error("Error en la respuesta del servidor");
                 
@@ -254,7 +254,7 @@
 
             } catch (error) {
                 console.error("Error al generar reporte:", error);
-                alert("Error al conectar con el servidor 10.243.206.196. Verifica que app.js esté corriendo.");
+                alert("Error al conectar con el servidor 10.23.231.196. Verifica que app.js esté corriendo.");
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:red;">Error de conexión</td></tr>';
             }
         }
