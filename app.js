@@ -1,15 +1,20 @@
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
-const path = require('path'); // Necesario para manejar rutas de archivos
+const path = require('path'); 
 const app = express();
 
-app.use(cors());
+// --- CONFIGURACIÓN DE MIDDLEWARE ---
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
+}));
 app.use(express.json());
 
-// --- CONFIGURACIÓN PARA SERVIR ARCHIVOS A TUS COMPAÑEROS ---
-app.use(express.static('public')); 
+// --- CONFIGURACIÓN PARA SERVIR ARCHIVOS ESTÁTICOS ---
+app.use(express.static(path.join(__dirname, 'public'))); 
 
+// --- RUTAS PARA NAVEGACIÓN ---
 app.get('/mesero', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'mesero.html'));
 });
@@ -17,9 +22,14 @@ app.get('/mesero', (req, res) => {
 app.get('/admin-menu', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'gestionar_menu.html'));
 });
+
+app.get('/cocina', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'cocina.html'));
+});
+
 // ----------------------------------------------------------
 
-// CONFIGURACIÓN DE CONEXIÓN
+// CONFIGURACIÓN DE CONEXIÓN A BASE DE DATOS
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -29,8 +39,11 @@ const db = mysql.createConnection({
 });
 
 db.connect(err => {
-    if (err) throw err;
-    console.log('✅ SERVIDOR CONECTADO A MYSQL');
+    if (err) {
+        console.error('❌ ERROR AL CONECTAR A MYSQL:', err.message);
+        return;
+    }
+    console.log('✅ SERVIDOR CONECTADO A MYSQL (PUERTO 3307)');
 });
 
 // --- 1. RUTA DE LOGIN ---
@@ -56,7 +69,7 @@ app.post('/registrar', (req, res) => {
             if (err) return res.status(500).json({ error: err.sqlMessage });
 
             if (results[0].total >= 1) {
-                console.log("🚫 Intento de duplicar Admin bloqueado");
+                console.log("🚫 Registro bloqueado: Ya existe un Administrador");
                 return res.status(403).send("Ya existe un administrador.");
             } else {
                 const sql = "INSERT INTO usuarios (id_usuario, nombre, rol, usuario, password) VALUES (?, ?, ?, ?, ?)";
@@ -75,7 +88,7 @@ app.post('/registrar', (req, res) => {
     }
 });
 
-// --- 3. RUTA DE PEDIDOS ---
+// --- 3. RUTA DE ENVÍO DE PEDIDOS (MESERO) ---
 app.post('/pedidos', (req, res) => {
     const { mesa, items, id_usuario } = req.body;
     const sqlPed = "INSERT INTO pedidos (id_mesa, id_usuario, fecha, estado) VALUES (?, ?, NOW(), 'pendiente')";
@@ -84,8 +97,8 @@ app.post('/pedidos', (req, res) => {
         if (err) return res.status(500).json({ error: err.sqlMessage });
 
         const pedidoId = result.insertId;
-        const valoresDetalle = items.map(i => [pedidoId, null, i.nombre, i.cant, i.precio]);
-        const sqlDet = "INSERT INTO detalle_pedido (id_pedido, id_producto, nombre_producto_t, cantidad, precio_unitario) VALUES ?";
+        const valoresDetalle = items.map(i => [pedidoId, null, i.nombre, i.cant, i.precio, i.nota]); 
+        const sqlDet = "INSERT INTO detalle_pedido (id_pedido, id_producto, nombre_producto_t, cantidad, precio_unitario, nota) VALUES ?";
 
         db.query(sqlDet, [valoresDetalle], (errDet) => {
             if (errDet) return res.status(500).json({ error: errDet.sqlMessage });
@@ -94,7 +107,58 @@ app.post('/pedidos', (req, res) => {
     });
 });
 
-// --- 4. RUTA DE CLIENTES ---
+// --- 4. RUTA DE PEDIDOS PENDIENTES (COCINA) ---
+app.get('/pedidos-pendientes', (req, res) => {
+    const sql = `
+        SELECT p.id_pedido, p.id_mesa AS mesa, p.fecha,
+                d.nombre_producto_t AS nombre_producto, d.cantidad, d.nota
+        FROM pedidos p
+        JOIN detalle_pedido d ON p.id_pedido = d.id_pedido
+        WHERE p.estado = 'pendiente'
+        ORDER BY p.fecha ASC
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error("❌ Error en cocina:", err.sqlMessage);
+            return res.status(500).json({ error: err.sqlMessage });
+        }
+
+        const pedidosMap = {};
+        results.forEach(fila => {
+            if (!pedidosMap[fila.id_pedido]) {
+                pedidosMap[fila.id_pedido] = {
+                    id_pedido: fila.id_pedido,
+                    mesa: fila.mesa,
+                    fecha: fila.fecha,
+                    detalles: []
+                };
+            }
+            pedidosMap[fila.id_pedido].detalles.push({
+                nombre_producto: fila.nombre_producto,
+                cantidad: fila.cantidad,
+                nota: fila.nota || ""
+            });
+        });
+        res.status(200).json(Object.values(pedidosMap));
+    });
+});
+
+// --- 5. RUTA PARA MARCAR COMO ENTREGADO (Cambiado a 'listo' para evitar error de truncado) ---
+app.get('/pedidos-entregar/:id', (req, res) => {
+    const { id } = req.params;
+    const sql = "UPDATE pedidos SET estado = 'listo' WHERE id_pedido = ?";
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error("❌ Error SQL:", err.sqlMessage);
+            return res.status(500).send(err.sqlMessage);
+        }
+        console.log(`✅ Pedido #${id} actualizado a 'listo'`);
+        res.status(200).send("Pedido entregado");
+    });
+});
+
+// --- 6. RUTA DE CLIENTES ---
 app.post('/clientes', (req, res) => {
     const { nombre } = req.body;
     db.query("INSERT INTO clientes (nombre) VALUES (?)", [nombre], (err) => {
@@ -103,7 +167,7 @@ app.post('/clientes', (req, res) => {
     });
 });
 
-// --- 5. RUTA DE HISTORIAL (REPORTE GLOBAL) ---
+// --- 7. RUTA DE HISTORIAL (REPORTE PARA ADMIN) ---
 app.get('/pedidos', (req, res) => {
     const sql = `
         SELECT 
@@ -119,17 +183,13 @@ app.get('/pedidos', (req, res) => {
         GROUP BY p.id_pedido
         ORDER BY p.fecha DESC;
     `;
-
     db.query(sql, (err, results) => {
-        if (err) {
-            console.log("❌ Error en consulta de historial:", err.sqlMessage);
-            return res.status(500).json({ error: err.sqlMessage });
-        }
+        if (err) return res.status(500).json({ error: err.sqlMessage });
         res.status(200).json(results);
     });
 });
 
-// --- 6. RUTA DE GESTIÓN DE MENÚ ---
+// --- 8. GESTIÓN DE PRODUCTOS ---
 app.get('/productos-gestion', (req, res) => {
     db.query("SELECT id_producto, nombre, precio, disponible FROM productos", (err, results) => {
         if (err) return res.status(500).json({ error: err.sqlMessage });
@@ -147,24 +207,20 @@ app.put('/productos/disponibilidad/:id', (req, res) => {
     });
 });
 
-// NUEVA RUTA PARA ACTUALIZAR POR NOMBRE
 app.put('/productos/disponibilidad-nombre', (req, res) => {
     const { nombre, disponible } = req.body;
     const sql = "UPDATE productos SET disponible = ? WHERE UPPER(TRIM(nombre)) = UPPER(TRIM(?))";
     db.query(sql, [disponible, nombre], (err, result) => {
         if (err) return res.status(500).json({ error: err.sqlMessage });
-        
         if (result.affectedRows > 0) {
-            console.log(`✅ Producto actualizado: ${nombre} a estado ${disponible}`);
             res.status(200).send("Actualizado por nombre");
         } else {
-            console.log(`⚠️ No se encontró el producto en la BD: ${nombre}`);
             res.status(404).send("Producto no encontrado");
         }
     });
 });
 
-// --- 7. RUTA PARA CORTE DE CAJA (CORREGIDA) ---
+// --- 9. RUTA CORTE DE CAJA ---
 app.get('/corte-caja/:fecha', (req, res) => {
     const { fecha } = req.params; 
     const sql = `
@@ -179,8 +235,6 @@ app.get('/corte-caja/:fecha', (req, res) => {
         if (err) return res.status(500).json({ error: err.sqlMessage });
         const datos = results[0];
         const total = parseFloat(datos.totalVendido) || 0;
-        
-        // Enviamos las propiedades tal cual las pide tu corte_caja.html
         res.json({
             total: total,
             pedidos: datos.cantidadPedidos,
@@ -190,7 +244,26 @@ app.get('/corte-caja/:fecha', (req, res) => {
     });
 });
 
-// EL LISTEN AL FINAL
-app.listen(3000, () => {
-    console.log('🚀 Servidor Tío Garnacha ON en Puerto 3000');
+// --- 10. RUTAS PARA CLIENTES FRECUENTES ---
+app.get('/clientes-frecuentes', (req, res) => {
+    const query = "SELECT id, nombre, pedido_usual FROM clientes_frecuentes ORDER BY nombre ASC";
+    db.query(query, (err, results) => {
+        if (err) return res.status(500).json({ error: err.sqlMessage });
+        res.json(results);
+    });
+});
+
+app.post('/clientes-frecuentes', (req, res) => {
+    const { nombre, pedido } = req.body;
+    const query = "INSERT INTO clientes_frecuentes (nombre, pedido_usual) VALUES (?, ?)";
+    db.query(query, [nombre, pedido], (err) => {
+        if (err) return res.status(500).json({ error: err.sqlMessage });
+        res.status(200).send("Cliente guardado");
+    });
+});
+
+// INICIO DEL SERVIDOR
+app.listen(3000, '0.0.0.0', () => {
+    console.log('🚀 SERVIDOR TÍO GARNACHA CORRIENDO EN PUERTO 3000');
+    console.log('📱 Accesible en tu red local para meseros y cocina');
 });

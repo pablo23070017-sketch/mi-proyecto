@@ -181,22 +181,28 @@
             <span class="tecla-atajo">F2</span>
         </div>
 
+        <div class="tarjeta-admin" onclick="window.location.href='cocina.html'">
+            <span class="icono">👨‍🍳</span>
+            <span>MODO COCINA</span>
+            <span class="tecla-atajo">F3</span>
+        </div>
+
         <div class="tarjeta-admin" onclick="window.location.href='gestionar_menu.html'">
             <span class="icono">🍽️</span>
             <span>GESTIONAR MENÚ</span>
-            <span class="tecla-atajo">F3</span>
+            <span class="tecla-atajo">F4</span>
         </div>
 
         <div class="tarjeta-admin" onclick="window.location.href='generar_reporte.html'">
             <span class="icono">📊</span>
             <span>REPORTES</span>
-            <span class="tecla-atajo">F4</span>
+            <span class="tecla-atajo">F5</span>
         </div>
 
         <div class="tarjeta-admin" onclick="window.location.href='corte_caja.html'">
             <span class="icono">💰</span>
             <span>CORTE DE CAJA</span>
-            <span class="tecla-atajo">F5</span>
+            <span class="tecla-atajo">F6</span>
         </div>
     </div>
 
@@ -212,7 +218,7 @@
 
     <script>
         function mostrarAyuda() {
-            alert('Manual de Teclado (Admin): \n[F1] Tomar Pedido \n[F2] Ver Pedidos \n[F3] Gestionar Menú \n[F4] Generar Reportes \n[F5] Realizar Corte \n[ESC] Cerrar Sesión \n[?] Esta ayuda');
+            alert('Manual de Teclado (Admin): \n[F1] Tomar Pedido \n[F2] Ver Pedidos \n[F3] Modo Cocina \n[F4] Gestionar Menú \n[F5] Generar Reportes \n[F6] Realizar Corte \n[ESC] Cerrar Sesión \n[?] Esta ayuda');
         }
 
         function cerrarSesion() {
@@ -222,17 +228,17 @@
 
         // Lógica de Atajos de Teclado
         document.addEventListener('keydown', function(event) {
-            // Detener funciones por defecto (como ayuda de Windows en F1 o refrescar en F5)
-            if (event.key >= "F1" && event.key <= "F5") {
+            if (event.key >= "F1" && event.key <= "F6") {
                 event.preventDefault();
             }
 
             switch(event.key) {
                 case "F1": window.location.href = 'mesero.html'; break;
                 case "F2": window.location.href = 'pedidos.html'; break;
-                case "F3": window.location.href = 'gestionar_menu.html'; break;
-                case "F4": window.location.href = 'generar_reporte.html'; break;
-                case "F5": window.location.href = 'corte_caja.html'; break;
+                case "F3": window.location.href = 'cocina.html'; break;
+                case "F4": window.location.href = 'gestionar_menu.html'; break;
+                case "F5": window.location.href = 'generar_reporte.html'; break;
+                case "F6": window.location.href = 'corte_caja.html'; break;
                 case "Escape": cerrarSesion(); break;
                 case "?": mostrarAyuda(); break;
             }

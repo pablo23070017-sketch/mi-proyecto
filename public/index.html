@@ -83,7 +83,6 @@
         <h1>Tío Garnacha</h1>
         <h2>Inicio de Sesión</h2>
 
-        <input type="text" placeholder="ID Usuario">
         <input type="text" placeholder="Nombre (Usuario)">
         <input type="email" placeholder="Correo Electrónico">
         <input type="password" placeholder="Contraseña">
@@ -106,19 +105,18 @@
         const obtenerDatos = () => {
             const inputs = document.querySelectorAll("input");
             return {
-                id: inputs[0].value,
-                usuario: inputs[1].value,
-                correo: inputs[2].value,
-                password: inputs[3].value
+                // Se ajustaron los índices ya que ahora el primer input es el nombre
+                usuario: inputs[0].value,
+                correo: inputs[1].value,
+                password: inputs[2].value
             };
         };
 
-        // --- FUNCIÓN MAESTRA DE LOGIN (CONECTADA A MYSQL) ---
         async function realizarLogin(rolEsperado) {
             const { usuario, password } = obtenerDatos();
 
             try {
-                const res = await fetch('http://10.23.231.196:3000/login', {
+                const res = await fetch('http://192.168.1.70:3000/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ user: usuario, pass: password })
@@ -142,16 +140,16 @@
             }
         }
 
-        // --- FUNCIÓN MAESTRA DE REGISTRO (CONECTADA A MYSQL) ---
         async function registrarUsuario(rol) {
-            const { id, usuario, password } = obtenerDatos();
-            if(!id || !usuario || !password) return alert("Completa los campos principales.");
+            const { usuario, password } = obtenerDatos();
+            if(!usuario || !password) return alert("Completa los campos principales.");
 
             try {
-                const res = await fetch('http://10.23.231.196:3000/registrar', {
+                const res = await fetch('http://192.168.1.70:3000/registrar', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id, usuario, password, rol, nombre: usuario })
+                    // Se eliminó 'id' del cuerpo del envío
+                    body: JSON.stringify({ usuario, password, rol, nombre: usuario })
                 });
 
                 if(res.ok) alert(`Cuenta de ${rol} creada en la base de datos.`);
@@ -161,7 +159,6 @@
             }
         }
 
-        // --- ASIGNACIÓN DE CLICKS ---
         loginBtn.addEventListener("click", () => realizarLogin('mesero'));
         loginAdminBtn.addEventListener("click", () => realizarLogin('admin'));
         

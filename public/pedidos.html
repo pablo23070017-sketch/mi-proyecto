@@ -157,7 +157,7 @@
         async function cargarPedidosDB() {
             const tbody = document.querySelector("#pedidosTable tbody");
             try {
-                const res = await fetch('http://10.23.231.196:3000/pedidos');
+                const res = await fetch('http://192.168.1.70:3000/pedidos');
                 const pedidos = await res.json();
 
                 tbody.innerHTML = ""; 

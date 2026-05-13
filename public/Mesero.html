@@ -183,8 +183,7 @@
     <div class="seccion-panel">
         <h3 class="titulo-panel">⭐ CLIENTES FRECUENTES</h3>
         <div class="cuerpo-panel" id="lista_frecuentes">
-            <button class="boton-accion" style="grid-column: span 2; background-color: var(--blanco) !important;" onclick="abrir_modal_frecuente()">+ REGISTRAR ACTUAL</button>
-        </div>
+            </div>
     </div>
 
     <div class="seccion-panel">
@@ -257,7 +256,14 @@
 <div id="modal_nota" class="modal">
     <div class="modal-contenido">
         <h2 style="margin-top:0;"> RESUMEN DE ORDEN</h2>
-        <div id="contenido_nota" style="max-height: 50vh; overflow-y: auto; margin-bottom: 15px;"></div>
+        <div id="contenido_nota" style="max-height: 40vh; overflow-y: auto; margin-bottom: 15px;"></div>
+        
+        <div style="background: var(--negro); color: var(--amarillo); padding: 10px; border-radius: 10px; margin-bottom: 10px;">
+            <p style="margin:0; font-weight:bold;">PRUEBA UNITARIA: COBRO</p>
+            <input type="number" id="pago_cliente" placeholder="¿Con cuánto paga?" oninput="unidad_calcular_cambio()" style="margin-top:5px;">
+            <p id="resultado_cambio" style="margin:5px 0 0 0; font-weight:bold; color: var(--verde);">CAMBIO: $0.00</p>
+        </div>
+
         <button class="boton-accion" style="width: 100%; padding: 15px;" onclick="mandar_cocina()"> ENVIAR A COCINA</button>
         <button onclick="cerrar_nota()" style="width: 100%; margin-top: 10px; background:none; border:none; cursor:pointer; text-decoration: underline;">VOLVER AL MENU</button>
     </div>
@@ -288,7 +294,34 @@
 </div>
 
 <script>
-    const API_BASE = 'http://10.23.231.196:3000';
+    const API_BASE = 'http://192.168.1.70:3000';
+    var total_global_nota = 0;
+    var pedido_mesa = [];
+    var persona_actual = 1;
+    var prod_temp = "";
+    var cliente_actual_nombre = ""; 
+    var lista_frecuentes_data = [];
+
+    function test_logica_cambio(total, pagado) {
+        const t = parseFloat(total);
+        const p = parseFloat(pagado);
+        if (isNaN(p) || p < t) return "Dinero insuficiente";
+        return (p - t).toFixed(2);
+    }
+
+    function unidad_calcular_cambio() {
+        const pago = document.getElementById('pago_cliente').value;
+        const res = test_logica_cambio(total_global_nota, pago);
+        const txt = document.getElementById('resultado_cambio');
+        
+        if(res === "Dinero insuficiente") {
+            txt.innerText = "⚠️ " + res;
+            txt.style.color = "#ff6666";
+        } else {
+            txt.innerText = "CAMBIO: $" + res;
+            txt.style.color = "#92e27a";
+        }
+    }
 
     function volverAlPanel() {
         const sesion = JSON.parse(localStorage.getItem("sesion"));
@@ -298,15 +331,6 @@
             window.location.href = "panel.html";
         }
     }
-
-    var pedido_mesa = [];
-    var persona_actual = 1;
-    var prod_temp = "";
-    var cliente_actual_nombre = ""; 
-
-    var clientes_frecuentes = JSON.parse(localStorage.getItem("frecuentes")) || [
-        { nombre: "Don Juan", pedido: [{persona: 1, nombre: "Panucho POLLO", precio: 22, cant: 2, nota: "Usual"}] }
-    ];
 
     async function validar_disponibilidad(nombreBD, n, t, i) {
         try {
@@ -340,22 +364,42 @@
         }
     }
 
-    function cargar_frecuentes() {
+    async function cargar_frecuentes() {
         const div = document.getElementById('lista_frecuentes');
-        div.innerHTML = "";
-        clientes_frecuentes.forEach((c, i) => {
-            div.innerHTML += `<button class="btn-frecuente" onclick="cargar_pedido_frecuente(${i})">👤 ${c.nombre}</button>`;
-        });
-        div.innerHTML += `<button class="boton-accion" style="grid-column: span 2; background-color: var(--blanco) !important;" onclick="abrir_modal_frecuente()">+ REGISTRAR ACTUAL</button>`;
+        try {
+            const res = await fetch(`${API_BASE}/clientes-frecuentes`);
+            lista_frecuentes_data = await res.json();
+            
+            div.innerHTML = "";
+            lista_frecuentes_data.forEach((c, i) => {
+                div.innerHTML += `<button class="btn-frecuente" onclick="cargar_pedido_frecuente(${i})">👤 ${c.nombre}</button>`;
+            });
+            div.innerHTML += `<button class="boton-accion" style="grid-column: span 2; background-color: var(--blanco) !important;" onclick="abrir_modal_frecuente()">+ REGISTRAR ACTUAL</button>`;
+        } catch (e) {
+            div.innerHTML = "<p>Error cargando clientes.</p>";
+        }
     }
 
     function cargar_pedido_frecuente(index) {
-        cliente_actual_nombre = clientes_frecuentes[index].nombre; 
-        const usual = clientes_frecuentes[index].pedido;
+        if(pedido_mesa.length > 0) {
+            if(!confirm("Ya hay cosas en el pedido. ¿Deseas borrarlas y cargar el pedido usual de este cliente?")) return;
+        }
+
+        const cliente = lista_frecuentes_data[index];
+        cliente_actual_nombre = cliente.nombre; 
+        
+        // Vaciamos el pedido actual para evitar duplicados al cargar
+        pedido_mesa = [];
+        
+        const usual = JSON.parse(cliente.pedido_usual);
         usual.forEach(item => {
-            pedido_mesa.push({...item, persona: persona_actual});
+            // Quitamos el ID de persona previo si existe y asignamos la actual
+            const itemLimpio = {...item};
+            delete itemLimpio.persona;
+            pedido_mesa.push({...itemLimpio, persona: persona_actual});
         });
-        alert("Pedido de " + clientes_frecuentes[index].nombre + " cargado.");
+        
+        alert("Pedido de " + cliente.nombre + " cargado.");
         ver_nota();
     }
 
@@ -364,19 +408,35 @@
         document.getElementById('modal_frecuente').style.display = "flex";
     }
 
-    function guardar_frecuente() {
+    async function guardar_frecuente() {
         const nombre = document.getElementById('nombre_frecuente').value;
         if(!nombre) return alert("Escribe un nombre.");
-        clientes_frecuentes.push({ nombre: nombre, pedido: [...pedido_mesa] });
-        localStorage.setItem("frecuentes", JSON.stringify(clientes_frecuentes));
-        cerrar_modal_f();
-        cargar_frecuentes();
+
+        try {
+            const res = await fetch(`${API_BASE}/clientes-frecuentes`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ 
+                    nombre: nombre, 
+                    pedido: JSON.stringify(pedido_mesa)
+                })
+            });
+
+            if(res.ok) {
+                alert("Cliente guardado en la nube.");
+                cerrar_modal_f();
+                cargar_frecuentes();
+            }
+        } catch (error) {
+            alert("Error al guardar en BD.");
+        }
     }
 
     function refrescar_pedido() {
         if(confirm("¿Reiniciar pedido?")) {
             pedido_mesa = [];
             persona_actual = 1;
+            cliente_actual_nombre = "";
             document.getElementById('persona_label').innerText = persona_actual;
             alert("Borrado.");
         }
@@ -389,10 +449,10 @@
         var area = document.getElementById('contenido_nota');
         area.innerHTML = "";
         if(cliente_actual_nombre) area.innerHTML += `<h3>👤 ${cliente_actual_nombre}</h3><hr>`;
-        var total = 0;
+        total_global_nota = 0;
         pedido_mesa.forEach((p, i) => {
             var sub = p.precio * p.cant;
-            total += sub;
+            total_global_nota += sub;
             area.innerHTML += `
                 <div class="item-revision">
                     <b>P${p.persona}:</b> ${p.cant}x ${p.nombre} ($${sub})
@@ -402,7 +462,9 @@
                     </div>
                 </div>`;
         });
-        area.innerHTML += `<h3>TOTAL: $${total}</h3>`;
+        area.innerHTML += `<h3>TOTAL A COBRAR: $${total_global_nota}</h3>`;
+        document.getElementById('pago_cliente').value = "";
+        document.getElementById('resultado_cambio').innerText = "CAMBIO: $0.00";
         document.getElementById('modal_nota').style.display = "flex";
     }
 
@@ -440,6 +502,15 @@
 
     async function mandar_cocina() { 
         if(pedido_mesa.length === 0) return alert("Vacio.");
+
+        const pago = document.getElementById('pago_cliente').value;
+        const cambio = test_logica_cambio(total_global_nota, pago);
+
+        if (cambio === "Dinero insuficiente" || isNaN(parseFloat(pago))) {
+            alert("❌ No puedes enviar a cocina: El pago es insuficiente o no se ha registrado.");
+            return; 
+        }
+
         const numMesa = document.getElementById('mesa_num').value;
         const sesion = JSON.parse(localStorage.getItem("sesion"));
         const id_u = sesion ? sesion.id_usuario : 1;
@@ -498,7 +569,7 @@
     function cerrar_nota() { document.getElementById('modal_nota').style.display = "none"; }
     function cerrar_modal_f() { document.getElementById('modal_frecuente').style.display = "none"; }
 
-    cargar_frecuentes();
+    window.onload = cargar_frecuentes;
 </script>
 </body>
 </html>

@@ -250,6 +250,8 @@
 </div>
 
 <script>
+    const API_BASE = "http://192.168.1.70:3000";
+
     function abrirAyuda() {
         alert("AYUDA DE INVENTARIO: \n\n1. BLOQUEAR: Pulsa este botón si un producto se agotó; se pondrá en gris.\n2. DESBLOQUEAR: Pulsa de nuevo para activar el producto.");
     }
@@ -263,18 +265,14 @@
         }
     }
 
-    // FUNCIÓN PARA BLOQUEAR PRODUCTOS EN BASE DE DATOS
     async function toggleItem(btn) {
         const item = btn.parentElement;
         const nombreProducto = item.querySelector('h3').innerText.trim();
         const estaBloqueadoActualmente = btn.classList.contains('bloqueado');
-        
-        // Si está bloqueado (gris), lo queremos poner disponible (1)
-        // Si NO está bloqueado (verde), lo queremos bloquear (0)
         const nuevoEstado = estaBloqueadoActualmente ? 1 : 0; 
 
         try {
-            const response = await fetch(`http://192.168.1.49:3000/productos/disponibilidad-nombre`, {
+            const response = await fetch(`${API_BASE}/productos/disponibilidad-nombre`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -284,7 +282,6 @@
             });
 
             if (response.ok) {
-                // Actualizar interfaz solo si el servidor respondió OK
                 if(nuevoEstado === 1) {
                     btn.classList.remove('bloqueado');
                     btn.innerText = "BLOQUEAR";
@@ -297,24 +294,22 @@
                     item.style.filter = "grayscale(100%)";
                 }
             } else {
-                alert("No se encontró el producto '" + nombreProducto + "' en la base de datos.");
+                alert("Error al actualizar el producto en la base de datos.");
             }
         } catch (error) {
             console.error("Error:", error);
-            alert("Error de conexión con el servidor.");
+            alert("Error de conexión con el servidor en " + API_BASE);
         }
     }
 
-    // Sincronizar estados al cargar la página
     async function sincronizarEstados() {
         try {
-            const res = await fetch('http://192.168.1.49:3000/gestionar_menu');
+            const res = await fetch(`${API_BASE}/productos-gestion`);
             const productos = await res.json();
             
             const tarjetas = document.querySelectorAll('.item-menu');
             tarjetas.forEach(tarjeta => {
                 const nombreH3 = tarjeta.querySelector('h3').innerText.trim().toUpperCase();
-                // Buscamos coincidencia exacta de nombre
                 const prodBD = productos.find(p => p.nombre.trim().toUpperCase() === nombreH3);
                 
                 if (prodBD && prodBD.disponible === 0) {
@@ -326,7 +321,7 @@
                 }
             });
         } catch (e) { 
-            console.log("Error de sincronización inicial"); 
+            console.log("Error de sincronización con " + API_BASE); 
         }
     }
 
